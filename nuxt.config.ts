@@ -7,6 +7,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/ui',
-    '@nuxt/scripts'
-  ]
-})
+    '@nuxt/scripts',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+  ],
+});
