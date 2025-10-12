@@ -5,6 +5,10 @@ const { team } = defineProps<{
   team: Team;
 }>();
 
+const emit = defineEmits<{
+  (e: 'click', id: number): void;
+}>();
+
 const getTierColor = (tier: string) => {
   const tierColors: Record<
     string,
@@ -68,14 +72,25 @@ const getDamageColor = (damage: number) => {
     return 'error'; // 최고 데미지 (빨간색)
   }
 };
+
+const cType = computed(() => {
+  return team.type === 'duo' ? '듀오' : '스쿼드';
+});
+
+const handleClick = () => {
+  emit('click', team.id);
+};
 </script>
 
 <template>
-  <UCard class="hover:shadow-lg transition-shadow cursor-pointer">
+  <UCard
+    class="hover:shadow-lg transition-shadow cursor-pointer"
+    @click="handleClick"
+  >
     <template #header>
       <div class="flex justify-between items-start">
         <h3 class="text-lg font-semibold">{{ team.title }}</h3>
-        <span class="text-sm text-gray-500">{{ team.type }}</span>
+        <span class="text-sm text-gray-300">{{ cType }}</span>
       </div>
     </template>
 

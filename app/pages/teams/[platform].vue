@@ -2,6 +2,10 @@
 import { mockTeams } from '~/assets/mock/temas';
 
 // const { platform } = useRoute().params;
+
+const handleClick = (id: number) => {
+  console.log(id);
+};
 </script>
 <template>
   <div class="container mx-auto px-4 py-8">
@@ -15,7 +19,12 @@ import { mockTeams } from '~/assets/mock/temas';
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <TeamListCard v-for="team in mockTeams" :key="team.id" :team="team" />
+      <TeamListCard
+        v-for="team in mockTeams"
+        :key="team.id"
+        :team="team"
+        @click="handleClick"
+      />
     </div>
   </div>
 </template>
