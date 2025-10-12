@@ -2,6 +2,7 @@
 
 <template>
   <div>
-    <h1 class="text-3xl font-bold underline text-red-500">Hello world!</h1>
+    <HomeIntroduce />
+    <!-- TODO: 설명 스크린샷들 몇 개 추가하기 -->
   </div>
 </template>
