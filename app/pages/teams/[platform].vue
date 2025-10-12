@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { mockTeams } from '~/assets/mock/temas';
+import { platformTextTransform } from '~/utils/textTransform';
 
-// const { platform } = useRoute().params;
+const { platform } = useRoute().params as { platform: string };
 
 const handleClick = (id: number) => {
   console.log(id);
@@ -9,6 +10,12 @@ const handleClick = (id: number) => {
 </script>
 <template>
   <div class="container mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">
+        {{ platformTextTransform(platform) }} 팀 찾기
+      </h1>
+    </div>
+
     <div class="flex items-center justify-end gap-4 mb-4">
       <!-- 방 리스트 새로고침 버튼 아이콘 -->
       <UButton color="neutral" size="lg" variant="ghost">

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Team } from '~/models/team';
+import { modeTextTransform } from '~/utils/textTransform';
+
 const toast = useToast();
 
 const { team } = defineProps<{
@@ -75,7 +77,7 @@ const getDamageColor = (damage: number) => {
 };
 
 const cType = computed(() => {
-  return team.type === 'duo' ? '듀오' : '스쿼드';
+  return modeTextTransform(team.type);
 });
 
 const isFull = computed(() => {
