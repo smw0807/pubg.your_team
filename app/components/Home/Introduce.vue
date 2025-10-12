@@ -39,7 +39,7 @@
             class="mt-10 flex items-center justify-center gap-x-6 lg:justify-start"
           >
             <a
-              href="#"
+              href="/teams/kakao"
               class="rounded-md bg-gray-700 px-3.5 py-2.5 text-sm font-semibold text-white inset-ring inset-ring-white/5 hover:bg-gray-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               시작하기
@@ -58,7 +58,7 @@
           <NuxtImg
             width="1824"
             height="1080"
-            src="https://tailwindcss.com/plus-assets/img/component-images/dark-project-app-screenshot.png"
+            src="/images/home/introduce.png"
             alt="App screenshot"
             class="absolute top-0 left-0 w-228 max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
           />
