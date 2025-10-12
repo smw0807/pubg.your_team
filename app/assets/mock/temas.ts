@@ -1,4 +1,6 @@
-export const mockTeams = [
+import type { Team } from '~/models/team';
+
+export const mockTeams: Team[] = [
   // Bronze 티어
   {
     id: 1,
