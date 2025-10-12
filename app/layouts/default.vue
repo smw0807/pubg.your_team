@@ -3,7 +3,7 @@
     <UApp>
       <MainHeader />
 
-      <UMain>
+      <UMain class="container mx-auto px-5">
         <slot />
       </UMain>
 
