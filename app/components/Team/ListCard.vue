@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Team } from '~/models/team';
+const toast = useToast();
 
 const { team } = defineProps<{
   team: Team;
@@ -77,7 +78,21 @@ const cType = computed(() => {
   return team.type === 'duo' ? '듀오' : '스쿼드';
 });
 
+const isFull = computed(() => {
+  return team.type === 'duo'
+    ? 2 <= team.members.length
+    : 4 <= team.members.length;
+});
+
 const handleClick = () => {
+  if (isFull.value) {
+    toast.add({
+      title: '방이 꽉 찼습니다.',
+      color: 'error',
+      orientation: 'horizontal',
+    });
+    return;
+  }
   emit('click', team.id);
 };
 </script>
@@ -90,7 +105,12 @@ const handleClick = () => {
     <template #header>
       <div class="flex justify-between items-start">
         <h3 class="text-lg font-semibold">{{ team.title }}</h3>
-        <span class="text-sm text-gray-300">{{ cType }}</span>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-300">
+            [{{ team.members.length }}/ {{ team.type === 'duo' ? '2' : '4' }}]
+          </span>
+          <span class="text-sm text-gray-300">{{ cType }}</span>
+        </div>
       </div>
     </template>
 

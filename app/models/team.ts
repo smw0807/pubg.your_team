@@ -6,4 +6,5 @@ export interface Team {
   tier: string | null;
   damage: number | null;
   platform: string;
+  members: string[];
 }

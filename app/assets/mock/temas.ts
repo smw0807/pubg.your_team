@@ -10,6 +10,7 @@ export const mockTeams: Team[] = [
     tier: 'bronze',
     damage: 80,
     platform: 'kakao',
+    members: ['1', '2', '3'],
   },
   {
     id: 2,
@@ -19,6 +20,7 @@ export const mockTeams: Team[] = [
     tier: 'bronze',
     damage: 50,
     platform: 'steam',
+    members: ['1'],
   },
 
   // Silver 티어
@@ -30,6 +32,7 @@ export const mockTeams: Team[] = [
     tier: 'silver',
     damage: 120,
     platform: 'kakao',
+    members: ['1', '2', '3'],
   },
   {
     id: 4,
@@ -39,6 +42,7 @@ export const mockTeams: Team[] = [
     tier: 'silver',
     damage: 100,
     platform: 'steam',
+    members: ['1', '2'],
   },
 
   // Gold 티어
@@ -50,6 +54,7 @@ export const mockTeams: Team[] = [
     tier: 'gold',
     damage: 150,
     platform: 'kakao',
+    members: ['1', '2', '3', '4'],
   },
   {
     id: 6,
@@ -59,6 +64,7 @@ export const mockTeams: Team[] = [
     tier: 'gold',
     damage: 170,
     platform: 'console',
+    members: ['1', '2', '3', '4'],
   },
 
   // Platinum 티어
@@ -70,6 +76,7 @@ export const mockTeams: Team[] = [
     tier: 'platinum',
     damage: 200,
     platform: 'kakao',
+    members: ['1', '2'],
   },
   {
     id: 8,
@@ -79,6 +86,7 @@ export const mockTeams: Team[] = [
     tier: 'platinum',
     damage: 220,
     platform: 'steam',
+    members: ['1', '2', '3', '4'],
   },
 
   // Diamond 티어
@@ -90,6 +98,7 @@ export const mockTeams: Team[] = [
     tier: 'diamond',
     damage: 300,
     platform: 'kakao',
+    members: ['1', '2', '3', '4'],
   },
   {
     id: 10,
@@ -99,6 +108,7 @@ export const mockTeams: Team[] = [
     tier: 'diamond',
     damage: 320,
     platform: 'steam',
+    members: ['1'],
   },
 
   // Master 티어
@@ -110,6 +120,7 @@ export const mockTeams: Team[] = [
     tier: 'master',
     damage: 350,
     platform: 'kakao',
+    members: ['1', '2', '3', '4'],
   },
   {
     id: 12,
@@ -119,6 +130,7 @@ export const mockTeams: Team[] = [
     tier: 'master',
     damage: 380,
     platform: 'steam',
+    members: ['1'],
   },
 
   // Crystal 티어
@@ -130,6 +142,7 @@ export const mockTeams: Team[] = [
     tier: 'crystal',
     damage: 400,
     platform: 'kakao',
+    members: ['1', '2'],
   },
   {
     id: 14,
@@ -139,6 +152,7 @@ export const mockTeams: Team[] = [
     tier: 'crystal',
     damage: 450,
     platform: 'steam',
+    members: ['1'],
   },
 
   // Survivor 티어
@@ -150,6 +164,7 @@ export const mockTeams: Team[] = [
     tier: 'survivor',
     damage: 500,
     platform: 'kakao',
+    members: ['1', '2', '3', '4'],
   },
   {
     id: 16,
@@ -159,6 +174,7 @@ export const mockTeams: Team[] = [
     tier: 'survivor',
     damage: 550,
     platform: 'steam',
+    members: ['1'],
   },
 
   // 티어 무관 팟
@@ -170,6 +186,7 @@ export const mockTeams: Team[] = [
     tier: null,
     damage: null,
     platform: 'kakao',
+    members: ['1', '2', '3', '4'],
   },
   {
     id: 18,
@@ -179,6 +196,7 @@ export const mockTeams: Team[] = [
     tier: null,
     damage: null,
     platform: 'steam',
+    members: ['1', '2', '3'],
   },
   {
     id: 19,
@@ -188,6 +206,7 @@ export const mockTeams: Team[] = [
     tier: null,
     damage: null,
     platform: 'console',
+    members: ['1'],
   },
   {
     id: 20,
@@ -197,5 +216,6 @@ export const mockTeams: Team[] = [
     tier: null,
     damage: null,
     platform: 'kakao',
+    members: ['1', '2', '3'],
   },
 ];
