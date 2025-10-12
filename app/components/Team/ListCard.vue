@@ -105,7 +105,10 @@ const handleClick = () => {
     @click="handleClick"
   >
     <template #header>
-      <div class="flex justify-between items-start">
+      <div class="flex items-center gap-2">
+        <UBadge v-if="team.isRanked" color="error" variant="outline">
+          랭크
+        </UBadge>
         <h3 class="text-lg font-semibold">{{ team.title }}</h3>
         <div class="flex items-center gap-2">
           <span class="text-sm text-gray-300">

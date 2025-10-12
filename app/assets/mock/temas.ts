@@ -10,6 +10,7 @@ export const mockTeams: Team[] = [
     tier: 'bronze',
     damage: 80,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2', '3'],
   },
   {
@@ -20,6 +21,7 @@ export const mockTeams: Team[] = [
     tier: 'bronze',
     damage: 50,
     platform: 'steam',
+    isRanked: true,
     members: ['1'],
   },
 
@@ -32,6 +34,7 @@ export const mockTeams: Team[] = [
     tier: 'silver',
     damage: 120,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2', '3'],
   },
   {
@@ -42,6 +45,7 @@ export const mockTeams: Team[] = [
     tier: 'silver',
     damage: 100,
     platform: 'steam',
+    isRanked: true,
     members: ['1', '2'],
   },
 
@@ -54,6 +58,7 @@ export const mockTeams: Team[] = [
     tier: 'gold',
     damage: 150,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2', '3', '4'],
   },
   {
@@ -64,6 +69,7 @@ export const mockTeams: Team[] = [
     tier: 'gold',
     damage: 170,
     platform: 'console',
+    isRanked: true,
     members: ['1', '2', '3', '4'],
   },
 
@@ -76,6 +82,7 @@ export const mockTeams: Team[] = [
     tier: 'platinum',
     damage: 200,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2'],
   },
   {
@@ -86,6 +93,7 @@ export const mockTeams: Team[] = [
     tier: 'platinum',
     damage: 220,
     platform: 'steam',
+    isRanked: true,
     members: ['1', '2', '3', '4'],
   },
 
@@ -98,6 +106,7 @@ export const mockTeams: Team[] = [
     tier: 'diamond',
     damage: 300,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2', '3', '4'],
   },
   {
@@ -108,6 +117,7 @@ export const mockTeams: Team[] = [
     tier: 'diamond',
     damage: 320,
     platform: 'steam',
+    isRanked: true,
     members: ['1'],
   },
 
@@ -120,6 +130,7 @@ export const mockTeams: Team[] = [
     tier: 'master',
     damage: 350,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2', '3', '4'],
   },
   {
@@ -130,6 +141,7 @@ export const mockTeams: Team[] = [
     tier: 'master',
     damage: 380,
     platform: 'steam',
+    isRanked: true,
     members: ['1'],
   },
 
@@ -142,6 +154,7 @@ export const mockTeams: Team[] = [
     tier: 'crystal',
     damage: 400,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2'],
   },
   {
@@ -152,6 +165,7 @@ export const mockTeams: Team[] = [
     tier: 'crystal',
     damage: 450,
     platform: 'steam',
+    isRanked: true,
     members: ['1'],
   },
 
@@ -164,6 +178,7 @@ export const mockTeams: Team[] = [
     tier: 'survivor',
     damage: 500,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2', '3', '4'],
   },
   {
@@ -174,6 +189,7 @@ export const mockTeams: Team[] = [
     tier: 'survivor',
     damage: 550,
     platform: 'steam',
+    isRanked: true,
     members: ['1'],
   },
 
@@ -186,6 +202,7 @@ export const mockTeams: Team[] = [
     tier: null,
     damage: null,
     platform: 'kakao',
+    isRanked: true,
     members: ['1', '2', '3', '4'],
   },
   {
@@ -196,6 +213,7 @@ export const mockTeams: Team[] = [
     tier: null,
     damage: null,
     platform: 'steam',
+    isRanked: false,
     members: ['1', '2', '3'],
   },
   {
@@ -206,6 +224,7 @@ export const mockTeams: Team[] = [
     tier: null,
     damage: null,
     platform: 'console',
+    isRanked: false,
     members: ['1'],
   },
   {
@@ -216,6 +235,7 @@ export const mockTeams: Team[] = [
     tier: null,
     damage: null,
     platform: 'kakao',
+    isRanked: false,
     members: ['1', '2', '3'],
   },
 ];
