@@ -10,12 +10,12 @@ const items = ref<NavigationMenuItem[][]>([
     {
       label: '카카오 팀 찾기',
       icon: 'i-lucide-search',
-      to: '/kakao-team-finder',
+      to: '/teams/kakao',
     },
     {
       label: '스팀 팀 찾기',
       icon: 'i-lucide-search',
-      to: '/steam-team-finder',
+      to: '/teams/steam',
     },
   ],
   // [
