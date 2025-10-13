@@ -1,4 +1,4 @@
-import { app } from '~/utils/firebase';
+import useFirebase from '~/utils/firebase';
 import {
   getAdditionalUserInfo,
   getAuth,
@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth';
 
 export default function useAuth() {
+  const { app } = useFirebase();
   const auth: Auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
