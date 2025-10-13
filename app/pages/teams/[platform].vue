@@ -9,7 +9,7 @@ const selectedGameType = ref<GameType>('all');
 const gameTypeOptions = [
   { label: '전체', value: 'all' },
   { label: '랭크', value: 'ranked' },
-  { label: '언랭크', value: 'unranked' },
+  { label: '일반', value: 'unranked' },
 ];
 const selectedGameMode = ref<GameMode>('all');
 const gameModeOptions = [
