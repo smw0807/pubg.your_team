@@ -2,7 +2,7 @@ export interface Team {
   id?: string;
   title: string;
   description: string;
-  type: string;
+  mode: string;
   tier: string | null;
   damage: number | null;
   platform: string;

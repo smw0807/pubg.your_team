@@ -77,11 +77,11 @@ const getDamageColor = (damage: number) => {
 };
 
 const cType = computed(() => {
-  return modeTextTransform(team.type);
+  return modeTextTransform(team.mode);
 });
 
 const isFull = computed(() => {
-  return team.type === 'duo'
+  return team.mode === 'duo'
     ? 2 <= team.members.length
     : 4 <= team.members.length;
 });
@@ -112,7 +112,7 @@ const handleClick = () => {
         <h3 class="text-lg font-semibold">{{ team.title }}</h3>
         <div class="flex items-center gap-2">
           <span class="text-sm text-gray-300">
-            [{{ team.members.length }}/ {{ team.type === 'duo' ? '2' : '4' }}]
+            [{{ team.members.length }}/ {{ team.mode === 'duo' ? '2' : '4' }}]
           </span>
           <span class="text-sm text-gray-300">{{ cType }}</span>
         </div>

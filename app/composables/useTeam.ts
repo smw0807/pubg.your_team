@@ -22,14 +22,14 @@ export default function useTeam() {
     gameMode: GameMode
   ) => {
     let q = query(collection(db, 'teams'), where('platform', '==', platform));
-    if (gameMode !== 'all') {
+    if (gameType !== 'all') {
       q = query(
         q,
-        where('isRanked', '==', gameMode === 'ranked' ? true : false)
+        where('isRanked', '==', gameType === 'ranked' ? true : false)
       );
     }
-    if (gameType !== 'all') {
-      q = query(q, where('type', '==', gameType));
+    if (gameMode !== 'all') {
+      q = query(q, where('mode', '==', gameMode));
     }
     const teams = await getDocs(q);
     teamList.value = teams.docs.map((doc) => {
