@@ -9,7 +9,7 @@ const { team } = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'click', id: number): void;
+  (e: 'click', id: string): void;
 }>();
 
 const getTierColor = (tier: string) => {
@@ -95,7 +95,7 @@ const handleClick = () => {
     });
     return;
   }
-  emit('click', team.id);
+  emit('click', team.id as string);
 };
 </script>
 

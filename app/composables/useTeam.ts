@@ -1,0 +1,47 @@
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from 'firebase/firestore';
+import type { GameMode, GameType, Platform } from '~/models/common';
+import type { Team } from '~/models/team';
+import useFirebase from '~/utils/firebase';
+
+export default function useTeam() {
+  const { app } = useFirebase();
+  const db = getFirestore(app);
+
+  const teamList = ref<Team[]>([]);
+
+  // 방 정보 가져오기
+  const getTeams = async (
+    platform: Platform,
+    gameType: GameType,
+    gameMode: GameMode
+  ) => {
+    let q = query(collection(db, 'teams'), where('platform', '==', platform));
+    if (gameMode !== 'all') {
+      q = query(
+        q,
+        where('isRanked', '==', gameMode === 'ranked' ? true : false)
+      );
+    }
+    if (gameType !== 'all') {
+      q = query(q, where('type', '==', gameType));
+    }
+    const teams = await getDocs(q);
+    teamList.value = teams.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...(doc.data() as Team),
+      } as Team;
+    }) as Team[];
+  };
+
+  return {
+    getTeams,
+    teamList,
+  };
+}
