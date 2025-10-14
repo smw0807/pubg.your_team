@@ -8,4 +8,5 @@ export interface Team {
   platform: string;
   isRanked: boolean;
   members: string[];
+  createdAt: Date;
 }

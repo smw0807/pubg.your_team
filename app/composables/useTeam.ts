@@ -9,6 +9,7 @@ import {
 import type { GameMode, GameType, Platform } from '~/models/common';
 import type { Team } from '~/models/team';
 import useFirebase from '~/utils/firebase';
+import { teamsCollection } from '~/constants/collections';
 
 export default function useTeam() {
   const { app } = useFirebase();
@@ -24,7 +25,10 @@ export default function useTeam() {
     gameMode: GameMode,
     tier: string
   ) => {
-    let q = query(collection(db, 'teams'), where('platform', '==', platform));
+    let q = query(
+      collection(db, teamsCollection),
+      where('platform', '==', platform)
+    );
     if (gameType !== 'all') {
       q = query(
         q,
@@ -50,7 +54,7 @@ export default function useTeam() {
   const createTeam = async (team: Team) => {
     try {
       console.log(team);
-      // await addDoc(collection(db, 'teams'), team);
+      // await addDoc(collection(db, teamsCollection), team);
       toast.add({
         title: '방이 생성되었습니다.',
         color: 'success',

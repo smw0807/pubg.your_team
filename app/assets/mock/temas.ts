@@ -11,6 +11,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2', '3'],
+    createdAt: new Date(),
   },
   {
     title: '브론즈 즐겜팟',
@@ -21,6 +22,7 @@ export const mockTeams: Team[] = [
     platform: 'steam',
     isRanked: true,
     members: ['1'],
+    createdAt: new Date(),
   },
 
   // Silver 티어
@@ -33,6 +35,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2', '3'],
+    createdAt: new Date(),
   },
   {
     title: '실버+ 평딜100 이상',
@@ -43,6 +46,7 @@ export const mockTeams: Team[] = [
     platform: 'steam',
     isRanked: true,
     members: ['1', '2'],
+    createdAt: new Date(),
   },
 
   // Gold 티어
@@ -55,6 +59,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2', '3', '4'],
+    createdAt: new Date(),
   },
   {
     title: '골드+ 평딜170',
@@ -62,9 +67,10 @@ export const mockTeams: Team[] = [
     mode: 'squad',
     tier: 'gold',
     damage: 170,
-    platform: 'console',
+    platform: 'kakao',
     isRanked: true,
     members: ['1', '2', '3', '4'],
+    createdAt: new Date(),
   },
 
   // Platinum 티어
@@ -77,6 +83,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2'],
+    createdAt: new Date(),
   },
   {
     title: '플레+ 스쿼드',
@@ -87,6 +94,7 @@ export const mockTeams: Team[] = [
     platform: 'steam',
     isRanked: true,
     members: ['1', '2', '3', '4'],
+    createdAt: new Date(),
   },
 
   // Diamond 티어
@@ -99,6 +107,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2', '3', '4'],
+    createdAt: new Date(),
   },
   {
     title: '다이아+ 랭크업팟',
@@ -109,6 +118,7 @@ export const mockTeams: Team[] = [
     platform: 'steam',
     isRanked: true,
     members: ['1'],
+    createdAt: new Date(),
   },
 
   // Master 티어
@@ -121,6 +131,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2', '3', '4'],
+    createdAt: new Date(),
   },
   {
     title: '마스터+ 하드코어',
@@ -131,6 +142,7 @@ export const mockTeams: Team[] = [
     platform: 'steam',
     isRanked: true,
     members: ['1'],
+    createdAt: new Date(),
   },
 
   // Crystal 티어
@@ -143,6 +155,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2'],
+    createdAt: new Date(),
   },
   {
     title: '크리스탈+ 토너먼트',
@@ -153,6 +166,7 @@ export const mockTeams: Team[] = [
     platform: 'steam',
     isRanked: true,
     members: ['1'],
+    createdAt: new Date(),
   },
 
   // Survivor 티어
@@ -165,6 +179,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2', '3', '4'],
+    createdAt: new Date(),
   },
   {
     title: '서바이버 프로팀',
@@ -175,6 +190,7 @@ export const mockTeams: Team[] = [
     platform: 'steam',
     isRanked: true,
     members: ['1'],
+    createdAt: new Date(),
   },
 
   // 티어 무관 팟
@@ -187,6 +203,7 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: true,
     members: ['1', '2', '3', '4'],
+    createdAt: new Date(),
   },
   {
     title: '친목 스쿼드',
@@ -197,6 +214,7 @@ export const mockTeams: Team[] = [
     platform: 'steam',
     isRanked: false,
     members: ['1', '2', '3'],
+    createdAt: new Date(),
   },
   {
     title: '뉴비 환영 팟',
@@ -204,9 +222,10 @@ export const mockTeams: Team[] = [
     mode: 'duo',
     tier: null,
     damage: null,
-    platform: 'console',
+    platform: 'kakao',
     isRanked: false,
     members: ['1'],
+    createdAt: new Date(),
   },
   {
     title: '대학생 스쿼드',
@@ -217,5 +236,6 @@ export const mockTeams: Team[] = [
     platform: 'kakao',
     isRanked: false,
     members: ['1', '2', '3'],
+    createdAt: new Date(),
   },
 ];
