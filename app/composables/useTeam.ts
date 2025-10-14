@@ -3,6 +3,7 @@ import {
   collection,
   getDocs,
   getFirestore,
+  orderBy,
   query,
   where,
 } from 'firebase/firestore';
@@ -27,7 +28,8 @@ export default function useTeam() {
   ) => {
     let q = query(
       collection(db, teamsCollection),
-      where('platform', '==', platform)
+      where('platform', '==', platform),
+      orderBy('createdAt', 'desc')
     );
     if (gameType !== 'all') {
       q = query(
