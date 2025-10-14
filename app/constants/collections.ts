@@ -1,1 +1,1 @@
-export const teamsCollection = 'TEMAS';
+export const teamsCollection = 'TEAMS';
