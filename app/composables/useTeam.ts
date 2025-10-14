@@ -1,4 +1,5 @@
 import {
+  addDoc,
   collection,
   getDocs,
   getFirestore,
@@ -12,6 +13,7 @@ import useFirebase from '~/utils/firebase';
 export default function useTeam() {
   const { app } = useFirebase();
   const db = getFirestore(app);
+  const toast = useToast();
 
   const teamList = ref<Team[]>([]);
 
@@ -19,7 +21,8 @@ export default function useTeam() {
   const getTeams = async (
     platform: Platform,
     gameType: GameType,
-    gameMode: GameMode
+    gameMode: GameMode,
+    tier: string
   ) => {
     let q = query(collection(db, 'teams'), where('platform', '==', platform));
     if (gameType !== 'all') {
@@ -31,6 +34,9 @@ export default function useTeam() {
     if (gameMode !== 'all') {
       q = query(q, where('mode', '==', gameMode));
     }
+    if (tier !== 'all') {
+      q = query(q, where('tier', '==', tier));
+    }
     const teams = await getDocs(q);
     teamList.value = teams.docs.map((doc) => {
       return {
@@ -40,8 +46,24 @@ export default function useTeam() {
     }) as Team[];
   };
 
+  // 방 생성
+  const createTeam = async (team: Team) => {
+    try {
+      console.log(team);
+      // await addDoc(collection(db, 'teams'), team);
+      toast.add({
+        title: '방이 생성되었습니다.',
+        color: 'success',
+        orientation: 'horizontal',
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return {
     getTeams,
     teamList,
+    createTeam,
   };
 }

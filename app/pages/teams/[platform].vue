@@ -1,23 +1,19 @@
 <script setup lang="ts">
 import type { GameMode, GameType, Platform } from '~/models/common';
 import { platformTextTransform } from '~/utils/textTransform';
+import {
+  gameTypeOptions,
+  gameModeOptions,
+  tierOptions,
+} from '~/constants/options';
 
 const { platform } = useRoute().params as { platform: string };
 
 const { getTeams, teamList } = useTeam();
 
 const selectedGameType = ref<GameType>('all');
-const gameTypeOptions = [
-  { label: '전체', value: 'all' },
-  { label: '랭크', value: 'ranked' },
-  { label: '일반', value: 'unranked' },
-];
 const selectedGameMode = ref<GameMode>('all');
-const gameModeOptions = [
-  { label: '전체', value: 'all' },
-  { label: '듀오', value: 'duo' },
-  { label: '스쿼드', value: 'squad' },
-];
+const selectedTier = ref<string>('all');
 
 const handleClick = (id: string) => {
   console.log(id);
@@ -27,7 +23,8 @@ const search = async () => {
   await getTeams(
     platform as Platform,
     selectedGameType.value,
-    selectedGameMode.value
+    selectedGameMode.value,
+    selectedTier.value
   );
 };
 
@@ -56,6 +53,14 @@ onMounted(async () => {
         <USelect
           v-model="selectedGameMode"
           :items="gameModeOptions"
+          option-attribute="label"
+          value-attribute="value"
+          class="w-30"
+          @update:model-value="search"
+        />
+        <USelect
+          v-model="selectedTier"
+          :items="tierOptions"
           option-attribute="label"
           value-attribute="value"
           class="w-30"
