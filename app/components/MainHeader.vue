@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import useAuth from '~/composables/useAuth';
+import UserProfile from '~/components/Modal/UserProfile.vue';
+
 const { signIn, user, signOut } = useAuth();
 
 const handleSignIn = async () => {
@@ -15,9 +17,7 @@ const handleSignOut = async () => {
   <UHeader title="PUBG Your Team">
     <template #right>
       <template v-if="user">
-        <UButton color="info" variant="ghost">
-          <UIcon name="i-heroicons-user-circle" class="w-6 h-6" />
-        </UButton>
+        <UserProfile />
         <UUser
           :name="user?.displayName as string"
           :description="user?.email as string"

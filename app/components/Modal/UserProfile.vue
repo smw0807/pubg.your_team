@@ -1,0 +1,47 @@
+<script setup lang="ts">
+import UserStat from '~/components/Modal/UserStat.vue';
+const steamNickname = ref('');
+const kakaoNickname = ref('');
+</script>
+
+<template>
+  <UModal
+    title="게임 닉네임 관리"
+    description="현재 사용중인 스팀, 카카오 닉네임을 입력해주세요."
+    :dismissible="false"
+  >
+    <UButton color="info" variant="ghost">
+      <UIcon name="i-heroicons-user-circle" class="w-6 h-6" />
+    </UButton>
+
+    <template #body>
+      <div class="flex flex-col gap-4">
+        <UFormField label="스팀 닉네임">
+          <div class="flex gap-2">
+            <UInput
+              v-model="steamNickname"
+              placeholder="스팀 닉네임을 입력해주세요."
+              class="w-full"
+            />
+            <UserStat />
+          </div>
+        </UFormField>
+        <UFormField label="카카오 닉네임">
+          <div class="flex gap-2">
+            <UInput
+              v-model="kakaoNickname"
+              placeholder="카카오 닉네임을 입력해주세요."
+              class="w-full"
+            />
+            <UserStat />
+          </div>
+        </UFormField>
+      </div>
+    </template>
+    <template #footer>
+      <div class="flex justify-end">
+        <UButton label="저장" color="info" variant="outline" />
+      </div>
+    </template>
+  </UModal>
+</template>
