@@ -7,7 +7,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-import type { GameMode, GameType, Platform } from '~/models/common';
+import type { GameMode, GameType, Platform, Tier } from '~/models/common';
 import type { Team } from '~/models/team';
 import useFirebase from '~/utils/firebase';
 import { teamsCollection } from '~/constants/collections';
@@ -24,7 +24,7 @@ export default function useTeam() {
     platform: Platform,
     gameType: GameType,
     gameMode: GameMode,
-    tier: string
+    tier: Tier
   ) => {
     let q = query(
       collection(db, teamsCollection),

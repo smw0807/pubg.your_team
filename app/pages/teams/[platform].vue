@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GameMode, GameType, Platform } from '~/models/common';
+import type { GameMode, GameType, Platform, Tier } from '~/models/common';
 import { platformTextTransform } from '~/utils/textTransform';
 import {
   gameTypeOptions,
@@ -13,7 +13,7 @@ const { getTeams, teamList } = useTeam();
 
 const selectedGameType = ref<GameType>('all');
 const selectedGameMode = ref<GameMode>('all');
-const selectedTier = ref<string>('all');
+const selectedTier = ref<Tier>('all');
 
 const handleClick = (id: string) => {
   console.log(id);
