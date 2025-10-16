@@ -1,4 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { platform, nickname } = defineProps<{
+  platform: string;
+  nickname: string;
+}>();
+</script>
 
 <template>
   <UModal title="스탯 확인" description="현재 스탯을 확인할 수 있습니다.">
@@ -9,7 +14,14 @@
     </UTooltip>
 
     <template #body>
-      <div class="flex flex-col gap-4">ㅁㄴㅇㅁㄴㅇ</div>
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-2">
+          <span class="text-sm text-gray-500"
+            >{{ platformTextTransform(platform) }} 닉네임</span
+          >
+          <span class="text-lg font-bold">{{ nickname }}</span>
+        </div>
+      </div>
     </template>
   </UModal>
 </template>
