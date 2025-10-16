@@ -34,6 +34,7 @@ export default function useProfile() {
     await setDoc(doc(db, profilesCollection, user.value?.uid as string), {
       ...profileData,
     });
+    profileInfo.value = profileData;
   };
 
   onMounted(async () => {
