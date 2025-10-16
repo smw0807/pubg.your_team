@@ -35,6 +35,11 @@ export default function useAuth() {
     return result?.isNewUser || null;
   };
 
+  // 로그인 사용자 정보 가져오기
+  const getUserInfo = async () => {
+    return getAuth(app);
+  };
+
   // 현재 로그인 사용자 확인
   const currentUser = async (callback: (user: User | null) => void) => {
     try {
@@ -65,5 +70,6 @@ export default function useAuth() {
     signOut: handleSignOut,
     isNewUser,
     user,
+    getUserInfo,
   };
 }

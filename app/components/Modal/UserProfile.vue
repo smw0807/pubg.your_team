@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import UserStat from '~/components/Modal/UserStat.vue';
-const steamNickname = ref('');
-const kakaoNickname = ref('');
+
+const { profile } = useProfile();
+
+const steamNickname = ref(profile?.value?.steamNickname || '');
+const kakaoNickname = ref(profile?.value?.kakaoNickname || '');
 </script>
 
 <template>
