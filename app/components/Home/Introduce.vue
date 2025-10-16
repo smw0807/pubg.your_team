@@ -44,13 +44,6 @@
             >
               시작하기
             </a>
-            <a
-              href="#"
-              class="text-sm/6 font-semibold text-white hover:text-gray-100"
-            >
-              자세히 보기
-              <span aria-hidden="true">→</span>
-            </a>
           </div>
         </div>
         <div class="relative mt-16 h-80 lg:mt-8">
