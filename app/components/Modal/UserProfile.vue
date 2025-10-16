@@ -3,12 +3,17 @@ import UserStat from '~/components/Modal/UserStat.vue';
 
 const { profile, setProfile } = useProfile();
 
-const steamNickname = computed(() => profile?.value?.steamNickname || '');
-const kakaoNickname = computed(() => profile?.value?.kakaoNickname || '');
+const steamNickname = ref(profile?.value?.steamNickname || '');
+const kakaoNickname = ref(profile?.value?.kakaoNickname || '');
 
 const handleSave = async () => {
   await setProfile(steamNickname.value, kakaoNickname.value);
 };
+
+watch(profile, () => {
+  steamNickname.value = profile?.value?.steamNickname || '';
+  kakaoNickname.value = profile?.value?.kakaoNickname || '';
+});
 </script>
 
 <template>
@@ -30,7 +35,7 @@ const handleSave = async () => {
               placeholder="스팀 닉네임을 입력해주세요."
               class="w-full"
             />
-            <UserStat />
+            <UserStat platform="steam" :nickname="steamNickname" />
           </div>
         </UFormField>
         <UFormField label="카카오 닉네임">
@@ -40,7 +45,7 @@ const handleSave = async () => {
               placeholder="카카오 닉네임을 입력해주세요."
               class="w-full"
             />
-            <UserStat />
+            <UserStat platform="kakao" :nickname="kakaoNickname" />
           </div>
         </UFormField>
       </div>
