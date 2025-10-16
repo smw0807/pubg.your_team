@@ -14,7 +14,7 @@ const handleSave = async () => {
 <template>
   <UModal
     title="게임 닉네임 관리"
-    description="현재 사용중인 스팀, 카카오 닉네임을 입력해주세요."
+    description="팀찾기 기능을 이용하려면 현재 사용중인 스팀, 카카오 닉네임을 입력해주세요."
     :dismissible="false"
   >
     <UButton color="info" variant="ghost">
