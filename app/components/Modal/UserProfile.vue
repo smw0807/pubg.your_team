@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import UserStat from '~/components/Modal/UserStat.vue';
 
-const { profile } = useProfile();
+const { profile, setProfile } = useProfile();
 
 const steamNickname = ref(profile?.value?.steamNickname || '');
 const kakaoNickname = ref(profile?.value?.kakaoNickname || '');
+
+const handleSave = async () => {
+  await setProfile(steamNickname.value, kakaoNickname.value);
+};
 </script>
 
 <template>
@@ -43,7 +47,12 @@ const kakaoNickname = ref(profile?.value?.kakaoNickname || '');
     </template>
     <template #footer>
       <div class="flex justify-end">
-        <UButton label="저장" color="info" variant="outline" />
+        <UButton
+          label="저장"
+          color="info"
+          variant="outline"
+          @click="handleSave"
+        />
       </div>
     </template>
   </UModal>
