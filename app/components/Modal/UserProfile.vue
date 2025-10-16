@@ -3,8 +3,8 @@ import UserStat from '~/components/Modal/UserStat.vue';
 
 const { profile, setProfile } = useProfile();
 
-const steamNickname = ref(profile?.value?.steamNickname || '');
-const kakaoNickname = ref(profile?.value?.kakaoNickname || '');
+const steamNickname = computed(() => profile?.value?.steamNickname || '');
+const kakaoNickname = computed(() => profile?.value?.kakaoNickname || '');
 
 const handleSave = async () => {
   await setProfile(steamNickname.value, kakaoNickname.value);

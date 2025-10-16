@@ -9,15 +9,16 @@ export default function useProfile() {
 
   const { user, getUserInfo } = useAuth();
 
-  const profile = ref<Profile | null>(null);
+  const profileInfo = ref<Profile | null>(null);
+  const profile = computed<Profile | null>(() => profileInfo.value);
 
   const getProfile = async () => {
     if (!user.value) return;
     const p = await getDoc(
       doc(db, profilesCollection, user.value?.uid as string)
     );
-    profile.value = p.data() as Profile;
-    return profile.value;
+    profileInfo.value = p.data() as Profile;
+    return profileInfo.value;
   };
 
   const setProfile = async (steamNickname: string, kakaoNickname: string) => {
