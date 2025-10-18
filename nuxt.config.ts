@@ -20,6 +20,16 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: process.env.API_URL || 'http://localhost:3001',
+        changeOrigin: true,
+        prependPath: true,
+      },
+    },
+  },
+
   runtimeConfig: {
     public: {
       apiKey: process.env.FB_API_KEY,
