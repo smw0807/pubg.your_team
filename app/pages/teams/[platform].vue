@@ -73,7 +73,7 @@ onMounted(async () => {
           <UIcon name="i-heroicons-arrow-path-20-solid" class="w-6 h-6" />
         </UButton>
         <!-- 방 만들기 버튼 -->
-        <UButton color="primary" size="lg">방 만들기</UButton>
+        <ModalCreateTeam />
       </div>
     </div>
 
