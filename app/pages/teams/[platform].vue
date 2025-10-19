@@ -16,7 +16,8 @@ const selectedGameMode = ref<GameMode>('all');
 const selectedTier = ref<Tier>('all');
 
 const handleClick = (id: string) => {
-  console.log(id);
+  // TODO: 팀상세 들어가기전에 자리 있는지 확인 로직 추가 필요
+  navigateTo(`/room/${id}`);
 };
 
 const search = async () => {
