@@ -9,12 +9,18 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/ui',
+    '@nuxt/icon',
     '@nuxt/scripts',
     '@pinia/nuxt',
     '@vueuse/nuxt',
   ],
 
   css: ['~/assets/css/main.css'],
+
+  icon: {
+    collections: ['lucide'],
+    serverBundle: 'auto',
+  },
 
   vite: {
     plugins: [tailwindcss()],
