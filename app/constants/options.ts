@@ -4,8 +4,18 @@ export const gameTypeOptions = [
   { label: '일반', value: 'unranked' },
 ];
 
+export const createGameTypeOptions = [
+  { label: '일반', value: 'unranked' },
+  { label: '랭크', value: 'ranked' },
+];
+
 export const gameModeOptions = [
   { label: '전체', value: 'all' },
+  { label: '듀오', value: 'duo' },
+  { label: '스쿼드', value: 'squad' },
+];
+
+export const createGameModeOptions = [
   { label: '듀오', value: 'duo' },
   { label: '스쿼드', value: 'squad' },
 ];
@@ -17,6 +27,18 @@ export const platformOptions = [
 
 export const tierOptions = [
   { label: '전체', value: 'all' },
+  { label: '상관없음', value: null },
+  { label: '브론즈', value: 'bronze' },
+  { label: '실버', value: 'silver' },
+  { label: '골드', value: 'gold' },
+  { label: '플래티넘', value: 'platinum' },
+  { label: '크리스탈', value: 'crystal' },
+  { label: '다이아', value: 'diamond' },
+  { label: '마스터', value: 'master' },
+  { label: '서바이버', value: 'survivor' },
+];
+
+export const createTierOptions = [
   { label: '상관없음', value: null },
   { label: '브론즈', value: 'bronze' },
   { label: '실버', value: 'silver' },

@@ -8,7 +8,8 @@ import {
   where,
 } from 'firebase/firestore';
 import type { GameMode, GameType, Platform, Tier } from '~/models/common';
-import type { Team } from '~/models/team';
+import type { CreateTeam, Team } from '~/models/team';
+import useAuth from '~/composables/useAuth';
 import useFirebase from '~/utils/firebase';
 import { teamsCollection } from '~/constants/collections';
 
@@ -16,6 +17,8 @@ export default function useTeam() {
   const { app } = useFirebase();
   const db = getFirestore(app);
   const toast = useToast();
+
+  const { user } = useAuth();
 
   const teamList = ref<Team[]>([]);
 
@@ -55,13 +58,17 @@ export default function useTeam() {
   // 방 생성
   const createTeam = async (team: Team) => {
     try {
-      console.log(team);
-      // await addDoc(collection(db, teamsCollection), team);
+      const params: CreateTeam = {
+        ...team,
+        members: [user.value?.uid as string],
+      };
+      const result = await addDoc(collection(db, teamsCollection), params);
       toast.add({
         title: '방이 생성되었습니다.',
         color: 'success',
         orientation: 'horizontal',
       });
+      navigateTo(`/room/${result.id}`);
     } catch (error) {
       console.error(error);
     }

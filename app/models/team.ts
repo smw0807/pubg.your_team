@@ -10,3 +10,5 @@ export interface Team {
   members: string[];
   createdAt: Date;
 }
+
+export type CreateTeam = Omit<Team, 'id' | 'createdAt'>;
