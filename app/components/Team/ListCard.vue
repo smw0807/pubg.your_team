@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Team } from '~/models/team';
 import { modeTextTransform } from '~/utils/textTransform';
+import useAlert from '~/composables/useAlert';
 
-const toast = useToast();
+const { openAlert } = useAlert();
 
 const { team } = defineProps<{
   team: Team;
@@ -88,11 +89,7 @@ const isFull = computed(() => {
 
 const handleClick = () => {
   if (isFull.value) {
-    toast.add({
-      title: '방이 꽉 찼습니다.',
-      color: 'error',
-      orientation: 'horizontal',
-    });
+    openAlert('팀 인원이 꽉 찼습니다.');
     return;
   }
   emit('click', team.id as string);
