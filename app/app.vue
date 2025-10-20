@@ -8,9 +8,9 @@ const { confirmOpen } = useConfirm();
 <template>
   <div>
     <NuxtLayout>
+      <NuxtPage />
       <ModalCustomAlert :open="alertOpen" />
       <ModalCustomConfirm :open="confirmOpen" />
-      <NuxtPage />
     </NuxtLayout>
   </div>
 </template>
