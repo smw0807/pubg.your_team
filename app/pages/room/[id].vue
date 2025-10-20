@@ -1,22 +1,19 @@
 <script setup lang="ts">
 import useConfirm from '~/composables/useConfirm';
-import type { Team } from '~/models/team';
 
 const { id } = useRoute().params as { id: string };
 const router = useRouter();
-const { getTeam } = useRoom();
+const { team, getTeamInfo, leaveTeam, joinTeam } = useRoom();
 
 const { openConfirm } = useConfirm();
 
-const team = ref<Team | null>(null);
-
 onMounted(async () => {
-  team.value = await getTeam(id);
+  await getTeamInfo(id);
+  await joinTeam(id);
 });
 
-onUnmounted(() => {
-  // 팀 나가기 버튼 클릭 시 팀 나가기 로직 추가 필요
-  console.log('팀 나가기');
+onUnmounted(async () => {
+  await leaveTeam(id);
 });
 
 const handleLeaveTeam = () => {
