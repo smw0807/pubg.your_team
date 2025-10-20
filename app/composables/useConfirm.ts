@@ -2,7 +2,7 @@
 const globalConfirmState = {
   confirmOpen: ref(false),
   confirmTitle: ref('확인'),
-  confirmDescription: ref('확인 설명'),
+  confirmDescription: ref(''),
   confirmCallback: ref<(() => void) | null>(null),
 };
 

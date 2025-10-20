@@ -12,7 +12,7 @@ const handleUpdateOpen = (open: boolean) => {
   <UModal
     :open="alertOpen"
     :title="alertTitle"
-    :description="alertDescription || '알림'"
+    :description="alertDescription"
     :dismissible="false"
     @update:open="handleUpdateOpen"
   >

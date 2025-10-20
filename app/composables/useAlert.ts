@@ -2,7 +2,7 @@
 const globalAlertState = {
   alertOpen: ref(false),
   alertTitle: ref('알림'),
-  alertDescription: ref('알림 설명'),
+  alertDescription: ref(''),
 };
 
 export default function useAlert() {
