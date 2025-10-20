@@ -11,7 +11,6 @@ export default function useConfirm() {
   const confirmTitle = globalConfirmState.confirmTitle;
   const confirmDescription = globalConfirmState.confirmDescription;
   const confirmCallback = globalConfirmState.confirmCallback;
-  const getConfirmOpen = computed(() => confirmOpen.value);
 
   const openConfirm = (
     title: string,
@@ -38,7 +37,6 @@ export default function useConfirm() {
 
   return {
     confirmOpen,
-    getConfirmOpen,
     confirmTitle,
     confirmDescription,
     openConfirm,

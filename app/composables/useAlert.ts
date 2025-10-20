@@ -9,7 +9,6 @@ export default function useAlert() {
   const alertOpen = globalAlertState.alertOpen;
   const alertTitle = globalAlertState.alertTitle;
   const alertDescription = globalAlertState.alertDescription;
-  const getAlertOpen = computed(() => alertOpen.value);
 
   const openAlert = (title: string, description?: string) => {
     alertOpen.value = true;
@@ -23,7 +22,6 @@ export default function useAlert() {
 
   return {
     alertOpen,
-    getAlertOpen,
     alertTitle,
     alertDescription,
     openAlert,
