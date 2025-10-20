@@ -17,7 +17,7 @@ const handleUpdateOpen = (open: boolean) => {
   <UModal
     :open="confirmOpen"
     :title="confirmTitle"
-    :description="confirmDescription"
+    :description="confirmDescription || '확인'"
     :dismissible="false"
     @update:open="handleUpdateOpen"
   >

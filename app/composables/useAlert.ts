@@ -1,8 +1,8 @@
 // 전역 상태를 위한 싱글톤 인스턴스
 const globalAlertState = {
   alertOpen: ref(false),
-  alertTitle: ref('Alert'),
-  alertDescription: ref('Alert Description'),
+  alertTitle: ref('알림'),
+  alertDescription: ref('알림 설명'),
 };
 
 export default function useAlert() {

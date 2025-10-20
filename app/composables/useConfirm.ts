@@ -1,8 +1,8 @@
 // 전역 상태를 위한 싱글톤 인스턴스
 const globalConfirmState = {
   confirmOpen: ref(false),
-  confirmTitle: ref('Confirm'),
-  confirmDescription: ref('Confirm Description'),
+  confirmTitle: ref('확인'),
+  confirmDescription: ref('확인 설명'),
   confirmCallback: ref<(() => void) | null>(null),
 };
 
