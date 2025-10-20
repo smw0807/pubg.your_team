@@ -1,14 +1,17 @@
 <script setup lang="ts">
+import useConfirm from '~/composables/useConfirm';
 import type { Team } from '~/models/team';
 
 const { id } = useRoute().params as { id: string };
+const router = useRouter();
 const { getTeam } = useRoom();
+
+const { openConfirm } = useConfirm();
 
 const team = ref<Team | null>(null);
 
 onMounted(async () => {
   team.value = await getTeam(id);
-  console.log(team.value);
 });
 
 onUnmounted(() => {
@@ -17,7 +20,9 @@ onUnmounted(() => {
 });
 
 const handleLeaveTeam = () => {
-  console.log('팀 나가기');
+  openConfirm('팀 나가기', '팀을 나가시겠습니까?', () => {
+    router.back();
+  });
 };
 </script>
 
