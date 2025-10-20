@@ -11,6 +11,11 @@ onMounted(async () => {
   console.log(team.value);
 });
 
+onUnmounted(() => {
+  // 팀 나가기 버튼 클릭 시 팀 나가기 로직 추가 필요
+  console.log('팀 나가기');
+});
+
 const handleLeaveTeam = () => {
   console.log('팀 나가기');
 };
