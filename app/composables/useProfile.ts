@@ -37,6 +37,11 @@ export default function useProfile() {
     profileInfo.value = profileData;
   };
 
+  const searchProfile = async (id: string) => {
+    const p = await getDoc(doc(db, profilesCollection, id));
+    return p.data() as Profile;
+  };
+
   onMounted(async () => {
     await getUserInfo();
     await getProfile();
@@ -46,5 +51,6 @@ export default function useProfile() {
     profile,
     getProfile,
     setProfile,
+    searchProfile,
   };
 }

@@ -10,17 +10,20 @@ import {
 import useFirebase from '~/utils/firebase';
 import { teamsCollection } from '~/constants/collections';
 import type { Team } from '~/models/team';
+import type { Profile } from '~/models/profile';
 
 export default function useRoom() {
   const { app } = useFirebase();
   const db = getFirestore(app);
 
-  const { user } = useAuth();
-  const { profile, getProfile } = useProfile();
-
   const router = useRouter();
   const { openAlert } = useAlert();
+
+  const { user } = useAuth();
+  const { profile, getProfile, searchProfile } = useProfile();
+
   const team = ref<Team | null>(null);
+  const teamMembers = ref<Profile[]>([]);
 
   // 팀 정보
   const getTeam = async (id: string) => {
@@ -87,6 +90,7 @@ export default function useRoom() {
     await updateDoc(doc(db, teamsCollection, id), {
       members: arrayUnion(user.value?.uid as string),
     });
+    await getTeamInfo(id);
   };
 
   // 팀 나가기
@@ -108,10 +112,24 @@ export default function useRoom() {
     team.value = null;
   };
 
+  // 팀 접속자 정보
+  const getTeamMembers = async () => {
+    const members = team.value?.members;
+    if (!members) {
+      return [];
+    }
+    for (const member of members) {
+      const profile = await searchProfile(member);
+      teamMembers.value.push(profile);
+    }
+  };
+
   return {
     team,
+    teamMembers,
     getTeamInfo,
     joinTeam,
     leaveTeam,
+    getTeamMembers,
   };
 }

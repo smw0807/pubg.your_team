@@ -3,13 +3,15 @@ import useConfirm from '~/composables/useConfirm';
 
 const { id } = useRoute().params as { id: string };
 const router = useRouter();
-const { team, getTeamInfo, leaveTeam, joinTeam } = useRoom();
+const { team, teamMembers, getTeamInfo, leaveTeam, joinTeam, getTeamMembers } =
+  useRoom();
 
 const { openConfirm } = useConfirm();
 
 onMounted(async () => {
   await getTeamInfo(id);
   await joinTeam(id);
+  getTeamMembers();
 });
 
 onUnmounted(async () => {
@@ -44,6 +46,16 @@ const handleLeaveTeam = () => {
     <div class="flex items-center justify-between">
       <div class="w-1/4">
         <h2 class="text-lg font-bold">접속자</h2>
+        <div v-for="member in teamMembers" :key="member.id">
+          <div class="flex items-center gap-2">
+            <span v-if="team?.platform === 'kakao'">
+              {{ member.kakaoNickname }}
+            </span>
+            <span v-if="team?.platform === 'steam'">
+              {{ member.steamNickname }}
+            </span>
+          </div>
+        </div>
       </div>
       <div class="w-3/4">
         <h2 class="text-lg font-bold">채팅</h2>
