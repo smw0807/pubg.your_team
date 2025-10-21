@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getFirestore,
+  onSnapshot,
   updateDoc,
 } from 'firebase/firestore';
 import useFirebase from '~/utils/firebase';
@@ -91,6 +92,7 @@ export default function useRoom() {
       members: arrayUnion(user.value?.uid as string),
     });
     await getTeamInfo(id);
+    watchTeamMembers();
   };
 
   // 팀 나가기
@@ -121,6 +123,27 @@ export default function useRoom() {
     for (const member of members) {
       const profile = await searchProfile(member);
       teamMembers.value.push(profile);
+    }
+  };
+
+  // 팀 접속자 정보 데이터 변화 감지
+  const watchTeamMembers = () => {
+    try {
+      onSnapshot(
+        doc(db, teamsCollection, team.value?.id as string),
+        async (doc) => {
+          const data = doc.data() as Team;
+          if (data.members) {
+            teamMembers.value = [];
+            for (const member of data.members) {
+              const profile = await searchProfile(member);
+              teamMembers.value.push(profile);
+            }
+          }
+        }
+      );
+    } catch (error) {
+      console.error('팀 접속자 정보 데이터 변화 감지 실패:', error);
     }
   };
 

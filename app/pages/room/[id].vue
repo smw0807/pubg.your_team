@@ -14,7 +14,6 @@ const { openAlert } = useAlert();
 onMounted(async () => {
   await getTeamInfo(id);
   await joinTeam(id);
-  getTeamMembers();
 });
 
 onUnmounted(async () => {
