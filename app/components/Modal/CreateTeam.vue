@@ -7,10 +7,8 @@ import {
   platformOptions,
 } from '~/constants/options';
 import type { CreateTeam, Team } from '~/models/team';
-import useConfirm from '~/composables/useConfirm';
 
 const { createTeam } = useTeam();
-const { openConfirm } = useConfirm();
 const open = ref(false);
 
 // 폼 데이터
@@ -30,18 +28,16 @@ const selectedGameType = ref('ranked');
 
 // 폼 제출
 const handleSubmit = async () => {
-  openConfirm('팀 생성', '팀을 생성하시겠습니까?', async () => {
-    try {
-      const teamData: Team = {
-        ...formData.value,
-        isRanked: selectedGameType.value === 'ranked',
-        createdAt: new Date(),
-      };
-      await createTeam(teamData);
-    } catch (error) {
-      console.error('팀 생성 실패:', error);
-    }
-  });
+  try {
+    const teamData: Team = {
+      ...formData.value,
+      isRanked: selectedGameType.value === 'ranked',
+      createdAt: new Date(),
+    };
+    await createTeam(teamData);
+  } catch (error) {
+    console.error('팀 생성 실패:', error);
+  }
 };
 
 const handleOpen = (value: boolean) => {
