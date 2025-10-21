@@ -5,7 +5,7 @@ import type { Platform } from '~/models/common';
 
 const { id } = useRoute().params as { id: string };
 const router = useRouter();
-const { team, teamMembers, getTeamInfo, leaveTeam, joinTeam } = useRoom();
+const { team, teamMembers, getTeamInfo, leaveTeam, joinTeam } = useChat();
 
 const { openConfirm } = useConfirm();
 const { openAlert } = useAlert();
@@ -205,6 +205,7 @@ watch(
           </div>
         </div>
       </div>
+
       <!-- 채팅 섹션 -->
       <div class="w-3/4">
         <div

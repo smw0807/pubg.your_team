@@ -13,7 +13,7 @@ import { teamsCollection } from '~/constants/collections';
 import type { Team } from '~/models/team';
 import type { Profile } from '~/models/profile';
 
-export default function useRoom() {
+export default function useChat() {
   const { app } = useFirebase();
   const db = getFirestore(app);
 
