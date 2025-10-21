@@ -69,6 +69,7 @@ const resetForm = () => {
     description="새로운 팀을 만들어보세요"
     :dismissible="false"
     :open="open"
+    style="z-index: 99999"
     @update:open="handleOpen"
     @close="open = false"
   >

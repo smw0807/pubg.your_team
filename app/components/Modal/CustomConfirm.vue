@@ -19,7 +19,7 @@ const handleUpdateOpen = (open: boolean) => {
     :title="confirmTitle"
     :description="confirmDescription"
     :dismissible="false"
-    style="z-index: 100000"
+    style="z-index: 100001"
     @update:open="handleUpdateOpen"
   >
     <template #footer>
