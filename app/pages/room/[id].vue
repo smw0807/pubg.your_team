@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import UserStat from '~/components/Modal/UserStat.vue';
 import useConfirm from '~/composables/useConfirm';
+import type { Platform } from '~/models/common';
 
 const { id } = useRoute().params as { id: string };
 const router = useRouter();
@@ -7,6 +9,7 @@ const { team, teamMembers, getTeamInfo, leaveTeam, joinTeam, getTeamMembers } =
   useRoom();
 
 const { openConfirm } = useConfirm();
+const { openAlert } = useAlert();
 
 onMounted(async () => {
   await getTeamInfo(id);
@@ -22,6 +25,11 @@ const handleLeaveTeam = () => {
   openConfirm('팀 나가기', '팀을 나가시겠습니까?', () => {
     router.back();
   });
+};
+
+const handleCopyNickname = (nickname: string) => {
+  navigator.clipboard.writeText(nickname);
+  openAlert('닉네임이 복사되었습니다.');
 };
 </script>
 
@@ -54,6 +62,21 @@ const handleLeaveTeam = () => {
             <span v-if="team?.platform === 'steam'">
               {{ member.steamNickname }}
             </span>
+            <UIcon
+              name="i-heroicons-clipboard-document"
+              class="w-4 h-4 cursor-pointer"
+              @click="
+                handleCopyNickname(
+                  team?.platform === 'kakao'
+                    ? (member.kakaoNickname as string)
+                    : (member.steamNickname as string)
+                )
+              "
+            />
+            <UserStat
+              :platform="team?.platform as Platform"
+              :nickname="team?.platform === 'kakao' ? member.kakaoNickname as string : member.steamNickname as string"
+            />
           </div>
         </div>
       </div>
