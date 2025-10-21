@@ -115,16 +115,16 @@ export default function useRoom() {
   };
 
   // 팀 접속자 정보
-  const getTeamMembers = async () => {
-    const members = team.value?.members;
-    if (!members) {
-      return [];
-    }
-    for (const member of members) {
-      const profile = await searchProfile(member);
-      teamMembers.value.push(profile);
-    }
-  };
+  // const getTeamMembers = async () => {
+  //   const members = team.value?.members;
+  //   if (!members) {
+  //     return [];
+  //   }
+  //   for (const member of members) {
+  //     const profile = await searchProfile(member);
+  //     teamMembers.value.push(profile);
+  //   }
+  // };
 
   // 팀 접속자 정보 데이터 변화 감지
   const watchTeamMembers = () => {
@@ -153,6 +153,5 @@ export default function useRoom() {
     getTeamInfo,
     joinTeam,
     leaveTeam,
-    getTeamMembers,
   };
 }
