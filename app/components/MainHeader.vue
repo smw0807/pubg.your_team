@@ -3,13 +3,16 @@ import useAuth from '~/composables/useAuth';
 import UserProfile from '~/components/Modal/UserProfile.vue';
 
 const { signIn, user, signOut } = useAuth();
+const { openConfirm } = useConfirm();
 
 const handleSignIn = async () => {
   await signIn();
 };
 
 const handleSignOut = async () => {
-  await signOut();
+  openConfirm('로그아웃', '로그아웃하시겠습니까?', async () => {
+    await signOut();
+  });
 };
 </script>
 
