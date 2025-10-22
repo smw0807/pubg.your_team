@@ -179,50 +179,19 @@ watch(
       <!-- 채팅 섹션 -->
       <div class="w-3/4">
         <div
-          class="bg-gray-800/50 rounded-xl border border-gray-700/50 h-[600px] flex flex-col"
+          class="bg-gray-800/50 rounded-xl border border-gray-700/50 h-[680px] flex flex-col"
         >
           <!-- 채팅 메시지 영역 -->
           <div ref="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-3">
             <div
               v-for="(message, idx) in chatMessages"
               :key="idx"
-              class="flex"
+              class="flex mb-4"
               :class="
                 message.uid === user?.uid ? 'justify-end' : 'justify-start'
               "
             >
-              <div
-                class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg"
-                :class="
-                  message.uid === user?.uid
-                    ? 'bg-blue-600 text-white rounded-br-none'
-                    : 'bg-gray-700 text-white rounded-bl-none'
-                "
-              >
-                <div
-                  v-if="message.type === 'system'"
-                  class="text-xs text-gray-300 mb-1"
-                >
-                  {{ message.sender }}
-                </div>
-                <div class="text-sm">{{ message.message }}</div>
-                <div
-                  class="text-xs mt-1 opacity-70"
-                  :class="
-                    message.uid === user?.uid ? 'text-right' : 'text-left'
-                  "
-                >
-                  {{ message.uid === user?.uid ? '나' : message.sender }}
-                </div>
-                <div
-                  class="text-xs mt-1 opacity-70"
-                  :class="
-                    message.uid === user?.uid ? 'text-right' : 'text-left'
-                  "
-                >
-                  {{ message.createdAt }}
-                </div>
-              </div>
+              <ChatMessage :message="message" :user="user" />
             </div>
           </div>
 
