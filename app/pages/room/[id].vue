@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import UserStat from '~/components/Modal/UserStat.vue';
+import ChatMessage from '~/components/Chat/Message.vue';
 import useConfirm from '~/composables/useConfirm';
 import type { Platform } from '~/models/common';
 
