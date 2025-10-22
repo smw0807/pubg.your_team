@@ -5,7 +5,16 @@ import type { Platform } from '~/models/common';
 
 const { id } = useRoute().params as { id: string };
 const router = useRouter();
-const { team, teamMembers, getTeamInfo, leaveTeam, joinTeam } = useChat();
+const { user } = useAuth();
+const {
+  team,
+  teamMembers,
+  chatMessages,
+  getTeamInfo,
+  leaveTeam,
+  joinTeam,
+  sendChatMessage,
+} = useChat();
 
 const { openConfirm } = useConfirm();
 const { openAlert } = useAlert();
@@ -31,37 +40,6 @@ const handleCopyNickname = (nickname: string) => {
   openAlert('닉네임이 복사되었습니다.');
 };
 
-const chatMessages = ref([
-  {
-    id: '1',
-    nickname: 'John Doe',
-    message: 'Hello, how are you?',
-    createdAt: new Date(),
-    isOwn: false,
-  },
-  {
-    id: '2',
-    nickname: 'Jane Doe',
-    message: 'I am fine, thank you!',
-    createdAt: new Date(),
-    isOwn: false,
-  },
-  {
-    id: '3',
-    nickname: 'John Doe',
-    message: 'What is your name?',
-    createdAt: new Date(),
-    isOwn: false,
-  },
-  {
-    id: '4',
-    nickname: 'Jane Doe',
-    message: 'My name is Jane Doe',
-    createdAt: new Date(),
-    isOwn: false,
-  },
-]);
-
 const newMessage = ref('');
 const chatContainer = ref<HTMLElement>();
 
@@ -73,20 +51,12 @@ const scrollToBottom = () => {
   });
 };
 
-const sendMessage = () => {
+const sendMessage = async () => {
   if (!newMessage.value.trim()) return;
 
-  const message = {
-    id: Date.now().toString(),
-    nickname: '나',
-    message: newMessage.value,
-    createdAt: new Date(),
-    isOwn: true,
-  };
-
-  chatMessages.value.push(message);
-  newMessage.value = '';
+  await sendChatMessage(newMessage.value);
   scrollToBottom();
+  newMessage.value = '';
 };
 
 // 채팅 메시지가 변경될 때마다 자동 스크롤
@@ -138,7 +108,7 @@ watch(
               class="group bg-gray-700/30 hover:bg-gray-700/50 rounded-lg p-4 transition-all duration-200 border border-gray-600/30 hover:border-gray-500/50"
             >
               <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center">
                   <!-- 사용자 아바타 -->
                   <div
                     class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm"
@@ -214,33 +184,43 @@ watch(
           <!-- 채팅 메시지 영역 -->
           <div ref="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-3">
             <div
-              v-for="message in chatMessages"
-              :key="message.id"
+              v-for="(message, idx) in chatMessages"
+              :key="idx"
               class="flex"
-              :class="message.isOwn ? 'justify-end' : 'justify-start'"
+              :class="
+                message.uid === user?.uid ? 'justify-end' : 'justify-start'
+              "
             >
               <div
                 class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg"
                 :class="
-                  message.isOwn
+                  message.uid === user?.uid
                     ? 'bg-blue-600 text-white rounded-br-none'
                     : 'bg-gray-700 text-white rounded-bl-none'
                 "
               >
-                <div v-if="!message.isOwn" class="text-xs text-gray-300 mb-1">
-                  {{ message.nickname }}
+                <div
+                  v-if="message.type === 'system'"
+                  class="text-xs text-gray-300 mb-1"
+                >
+                  {{ message.sender }}
                 </div>
                 <div class="text-sm">{{ message.message }}</div>
                 <div
                   class="text-xs mt-1 opacity-70"
-                  :class="message.isOwn ? 'text-right' : 'text-left'"
+                  :class="
+                    message.uid === user?.uid ? 'text-right' : 'text-left'
+                  "
                 >
-                  {{
-                    message.createdAt.toLocaleTimeString('ko-KR', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
-                  }}
+                  {{ message.uid === user?.uid ? '나' : message.sender }}
+                </div>
+                <div
+                  class="text-xs mt-1 opacity-70"
+                  :class="
+                    message.uid === user?.uid ? 'text-right' : 'text-left'
+                  "
+                >
+                  {{ message.createdAt }}
                 </div>
               </div>
             </div>

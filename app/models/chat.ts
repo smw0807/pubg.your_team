@@ -1,6 +1,6 @@
 export interface ChatMessage {
-  teamId: string;
   type: 'system' | 'user';
+  uid: string;
   sender: string;
   senderId: string;
   message: string;

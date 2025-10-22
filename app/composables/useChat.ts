@@ -1,17 +1,26 @@
 import {
+  addDoc,
   arrayRemove,
   arrayUnion,
+  collection,
   deleteDoc,
   doc,
   getDoc,
   getFirestore,
   onSnapshot,
+  orderBy,
+  query,
   updateDoc,
+  where,
 } from 'firebase/firestore';
 import useFirebase from '~/utils/firebase';
-import { teamsCollection } from '~/constants/collections';
+import {
+  teamsCollection,
+  chatMessagesCollection,
+} from '~/constants/collections';
 import type { Team } from '~/models/team';
 import type { Profile } from '~/models/profile';
+import type { ChatMessage } from '~/models/chat';
 
 export default function useChat() {
   const { app } = useFirebase();
@@ -25,6 +34,8 @@ export default function useChat() {
 
   const team = ref<Team | null>(null);
   const teamMembers = ref<Profile[]>([]);
+
+  const chatMessages = ref<ChatMessage[]>([]);
 
   // 팀 정보
   const getTeam = async (id: string) => {
@@ -93,6 +104,7 @@ export default function useChat() {
     });
     await getTeamInfo(id);
     watchTeamMembers();
+    watchChatMessages();
   };
 
   // 팀 나가기
@@ -113,18 +125,6 @@ export default function useChat() {
     await deleteDoc(doc(db, teamsCollection, id));
     team.value = null;
   };
-
-  // 팀 접속자 정보
-  // const getTeamMembers = async () => {
-  //   const members = team.value?.members;
-  //   if (!members) {
-  //     return [];
-  //   }
-  //   for (const member of members) {
-  //     const profile = await searchProfile(member);
-  //     teamMembers.value.push(profile);
-  //   }
-  // };
 
   // 팀 접속자 정보 데이터 변화 감지
   const watchTeamMembers = () => {
@@ -147,11 +147,51 @@ export default function useChat() {
     }
   };
 
+  // 채팅 메시지 전송
+  const sendChatMessage = async (message: string) => {
+    const params: ChatMessage = {
+      type: 'user',
+      uid: user.value?.uid as string,
+      sender:
+        team.value?.platform === 'kakao'
+          ? profile.value?.kakaoNickname || ''
+          : profile.value?.steamNickname || '',
+      senderId: user.value?.uid as string,
+      message,
+      createdAt: new Date(),
+    };
+    const teamRef = doc(db, teamsCollection, team.value?.id as string);
+    const chatMessageCollection = collection(teamRef, chatMessagesCollection);
+    await addDoc(chatMessageCollection, params);
+  };
+
+  // 채팅 메시지 데이터 변화 감지
+  const watchChatMessages = () => {
+    try {
+      const teamRef = doc(db, teamsCollection, team.value?.id as string);
+      const messageCollection = collection(teamRef, chatMessagesCollection);
+      const q = query(messageCollection, orderBy('createdAt', 'asc'));
+      onSnapshot(q, (querySnapshot) => {
+        chatMessages.value = [];
+        querySnapshot.forEach((doc) => {
+          chatMessages.value.push({
+            ...(doc.data() as ChatMessage),
+            createdAt: doc.data().createdAt.toDate().toLocaleString(),
+          });
+        });
+      });
+    } catch (error) {
+      console.error('채팅 메시지 데이터 변화 감지 실패:', error);
+    }
+  };
+
   return {
     team,
     teamMembers,
+    chatMessages,
     getTeamInfo,
     joinTeam,
     leaveTeam,
+    sendChatMessage,
   };
 }
