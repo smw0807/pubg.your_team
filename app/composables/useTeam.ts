@@ -22,7 +22,7 @@ export default function useTeam() {
 
   const teamList = ref<Team[]>([]);
 
-  // 방 정보 가져오기
+  // 팀 리스트
   const getTeams = async (
     platform: Platform,
     gameType: GameType,
@@ -55,7 +55,7 @@ export default function useTeam() {
     }) as Team[];
   };
 
-  // 방 생성
+  // 팀 생성
   const createTeam = async (team: Team) => {
     try {
       const params: CreateTeam = {
@@ -64,7 +64,7 @@ export default function useTeam() {
       };
       const result = await addDoc(collection(db, teamsCollection), params);
       toast.add({
-        title: '방이 생성되었습니다.',
+        title: '팀이 생성되었습니다.',
         color: 'success',
         orientation: 'horizontal',
       });

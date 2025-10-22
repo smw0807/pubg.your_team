@@ -11,7 +11,6 @@ import {
   orderBy,
   query,
   updateDoc,
-  where,
 } from 'firebase/firestore';
 import useFirebase from '~/utils/firebase';
 import {
