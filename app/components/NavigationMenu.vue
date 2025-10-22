@@ -17,7 +17,7 @@ const items = ref<NavigationMenuItem[][]>([
     },
     {
       label: '자유게시판',
-      to: '/board',
+      to: '/freeboard',
     },
   ],
   // [
