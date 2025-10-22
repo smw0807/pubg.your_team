@@ -43,11 +43,11 @@ const { message, user } = defineProps<{
       <div
         v-if="message.uid === user?.uid"
         class="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-500 transform rotate-45"
-      ></div>
+      />
       <div
         v-else
         class="absolute -bottom-1 -left-1 w-3 h-3 bg-gray-700 transform rotate-45"
-      ></div>
+      />
     </div>
 
     <!-- 발신자 이름 -->
