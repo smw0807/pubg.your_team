@@ -46,6 +46,7 @@ export default defineNuxtConfig({
       appId: process.env.FB_APP_ID,
       measurementId: process.env.FB_MEASUREMENT_ID,
       matchUrl: process.env.MATCH_URL,
+      apiUrl: process.env.API_URL,
     },
   },
 });
