@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/stats/**",
       "destination": "http://ec2-13-219-89-127.compute-1.amazonaws.com/api/$1"
     }
   ]
