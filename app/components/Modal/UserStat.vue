@@ -146,7 +146,7 @@ const getBanTypeColor = (banType: string) => {
             name="i-heroicons-chart-bar"
             class="w-12 h-12 mx-auto mb-2 opacity-50"
           />
-          <p>스탯을 확인하려면 버튼을 클릭하세요</p>
+          <p>현재 시즌 스탯이 없습니다.</p>
         </div>
       </div>
     </template>
