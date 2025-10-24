@@ -1,2 +1,30 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
+
+/* 푸터 스타일링 */
+footer {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+footer .container {
+  max-width: 1200px;
+}
+
+/* 푸터 링크 호버 효과 */
+footer a {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+footer a:hover {
+  transform: translateY(-1px);
+}
+
+/* 소셜 미디어 아이콘 애니메이션 */
+footer .flex.space-x-4 a {
+  transition: transform 0.2s ease;
+}
+
+footer .flex.space-x-4 a:hover {
+  transform: scale(1.1);
+}

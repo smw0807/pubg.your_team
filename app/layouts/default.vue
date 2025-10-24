@@ -8,10 +8,6 @@
       <UMain class="container mx-auto px-5">
         <slot />
       </UMain>
-
-      <UFooter>
-        <h1>Footer</h1>
-      </UFooter>
     </UApp>
   </div>
 </template>
