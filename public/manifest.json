@@ -1,0 +1,20 @@
+{
+  "name": "PUBG 팀 매칭",
+  "short_name": "PUBG 팀매칭",
+  "description": "배틀그라운드(PUBG) 팀원을 찾고 매칭하는 플랫폼",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1f2937",
+  "theme_color": "#1f2937",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["games", "social"],
+  "lang": "ko",
+  "dir": "ltr"
+}

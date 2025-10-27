@@ -1,4 +1,67 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// SEO 메타 태그 설정
+useHead({
+  title: 'PUBG 팀 매칭 - 배틀그라운드 팀원 찾기',
+  meta: [
+    {
+      name: 'description',
+      content:
+        '배틀그라운드(PUBG) 팀원을 찾고 매칭하는 플랫폼. 카카오, 스팀 플랫폼 지원, 실시간 채팅, 전적 조회 기능 제공.',
+    },
+    { property: 'og:title', content: 'PUBG 팀 매칭 - 배틀그라운드 팀원 찾기' },
+    {
+      property: 'og:description',
+      content:
+        '배틀그라운드(PUBG) 팀원을 찾고 매칭하는 플랫폼. 카카오, 스팀 플랫폼 지원, 실시간 채팅, 전적 조회 기능 제공.',
+    },
+    {
+      property: 'og:image',
+      content: 'https://www.pubgyourteam.kr/images/home/introduce.png',
+    },
+    { property: 'og:url', content: 'https://www.pubgyourteam.kr/' },
+    { name: 'twitter:title', content: 'PUBG 팀 매칭 - 배틀그라운드 팀원 찾기' },
+    {
+      name: 'twitter:description',
+      content:
+        '배틀그라운드(PUBG) 팀원을 찾고 매칭하는 플랫폼. 카카오, 스팀 플랫폼 지원, 실시간 채팅, 전적 조회 기능 제공.',
+    },
+    {
+      name: 'twitter:image',
+      content: 'https://www.pubgyourteam.kr/images/home/introduce.png',
+    },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'PUBG 팀 매칭',
+        description: '배틀그라운드(PUBG) 팀원을 찾고 매칭하는 플랫폼',
+        url: 'https://www.pubgyourteam.kr/',
+        applicationCategory: 'Game',
+        operatingSystem: 'Web Browser',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'KRW',
+        },
+        creator: {
+          '@type': 'Organization',
+          name: 'PUBG 팀 매칭',
+        },
+        featureList: [
+          '팀원 매칭',
+          '실시간 채팅',
+          '전적 조회',
+          '카카오 플랫폼 지원',
+          '스팀 플랫폼 지원',
+        ],
+      }),
+    },
+  ],
+});
+</script>
 
 <template>
   <div>
@@ -11,8 +74,11 @@
             width="800"
             height="500"
             src="/images/home/1.png"
-            alt="설명 이미지 1"
+            alt="PUBG 닉네임 등록 및 전적 조회 방법"
             class="object-contain rounded-xl shadow-lg mb-4"
+            loading="lazy"
+            format="webp"
+            quality="85"
           />
           <h3 class="text-lg font-semibold mb-2">
             STEP 1. 플레이 중인 닉네임 등록
@@ -26,8 +92,11 @@
             width="800"
             height="1000"
             src="/images/home/2.png"
-            alt="설명 이미지 2"
+            alt="PUBG 팀 생성 및 팀원 모집 방법"
             class="object-contain rounded-xl shadow-lg mb-4"
+            loading="lazy"
+            format="webp"
+            quality="85"
           />
           <h3 class="text-lg font-semibold mb-2">
             STEP 2. 팀 생성 및 팀원 모집
@@ -39,8 +108,11 @@
             width="1000"
             height="500"
             src="/images/home/3.png"
-            alt="설명 이미지 3"
+            alt="PUBG 팀원들과 실시간 채팅 소통 방법"
             class="object-contain rounded-xl shadow-lg mb-4"
+            loading="lazy"
+            format="webp"
+            quality="85"
           />
           <h3 class="text-lg font-semibold mb-2">
             STEP 3. 채팅방 및 팀원들과 실시간 소통
@@ -52,8 +124,11 @@
             width="1000"
             height="500"
             src="/images/home/4.png"
-            alt="설명 이미지 4"
+            alt="PUBG 닉네임 복사 및 전적 조회 기능"
             class="object-contain rounded-xl shadow-lg mb-4"
+            loading="lazy"
+            format="webp"
+            quality="85"
           />
           <h3 class="text-lg font-semibold mb-2">
             STEP 4. 닉네임 복사와 전적, 최근 매치 조회

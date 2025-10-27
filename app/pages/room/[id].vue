@@ -5,6 +5,19 @@ import useConfirm from '~/composables/useConfirm';
 import type { Platform } from '~/models/common';
 
 const { id } = useRoute().params as { id: string };
+
+// SEO 메타 태그 설정 - 동적 콘텐츠는 나중에 업데이트됨
+useHead({
+  title: '팀 채팅방 - PUBG 팀 매칭',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'PUBG 팀원들과 실시간 채팅하고 소통하세요. 닉네임 복사, 전적 조회 기능 제공.',
+    },
+    { name: 'robots', content: 'noindex, nofollow' }, // 개인 채팅방이므로 인덱싱 방지
+  ],
+});
 const router = useRouter();
 const { user } = useAuth();
 const {

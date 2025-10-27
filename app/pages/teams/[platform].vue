@@ -9,6 +9,63 @@ import {
 
 const { platform } = useRoute().params as { platform: string };
 
+// SEO 메타 태그 설정
+const platformName = platformTextTransform(platform);
+const pageTitle = `${platformName} 팀 찾기 - PUBG 팀 매칭`;
+const pageDescription = `배틀그라운드 ${platformName} 플랫폼에서 팀원을 찾아보세요. 실시간 팀 매칭, 채팅, 전적 조회 기능을 제공합니다.`;
+
+useHead({
+  title: pageTitle,
+  meta: [
+    { name: 'description', content: pageDescription },
+    { property: 'og:title', content: pageTitle },
+    { property: 'og:description', content: pageDescription },
+    {
+      property: 'og:image',
+      content: 'https://www.pubgyourteam.kr/images/home/introduce.png',
+    },
+    {
+      property: 'og:url',
+      content: `https://www.pubgyourteam.kr/teams/${platform}`,
+    },
+    { name: 'twitter:title', content: pageTitle },
+    { name: 'twitter:description', content: pageDescription },
+    {
+      name: 'twitter:image',
+      content: 'https://www.pubgyourteam.kr/images/home/introduce.png',
+    },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: pageTitle,
+        description: pageDescription,
+        url: `https://www.pubgyourteam.kr/teams/${platform}`,
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: '홈',
+              item: 'https://www.pubgyourteam.kr',
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: `${platformName} 팀 찾기`,
+              item: `https://www.pubgyourteam.kr/teams/${platform}`,
+            },
+          ],
+        },
+      }),
+    },
+  ],
+});
+
 const { getTeams, teamList } = useTeam();
 
 const selectedGameType = ref<GameType>('all');

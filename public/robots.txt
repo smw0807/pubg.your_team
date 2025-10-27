@@ -1,2 +1,13 @@
-User-Agent: *
-Disallow:
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.pubgyourteam.kr//sitemap.xml
+
+# Disallow private areas
+Disallow: /room/
+Disallow: /test
+Disallow: /api/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
