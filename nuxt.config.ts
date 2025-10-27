@@ -33,6 +33,10 @@ export default defineNuxtConfig({
           content:
             'PUBG, 배틀그라운드, 팀매칭, 팀원찾기, 카카오, 스팀, 전적조회, 채팅',
         },
+        {
+          name: 'naver-site-verification',
+          content: '29c95d2b155635e22e1a4e08b412e44ae89a1820',
+        },
         { name: 'author', content: 'PUBG 팀 매칭' },
         { name: 'robots', content: 'index, follow' },
         { name: 'googlebot', content: 'index, follow' },
