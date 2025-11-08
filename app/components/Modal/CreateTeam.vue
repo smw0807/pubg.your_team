@@ -9,6 +9,9 @@ import {
 import type { CreateTeam, Team } from '~/models/team';
 
 const { createTeam } = useTeam();
+const { openAlert } = useAlert();
+const { user } = useAuth();
+
 const open = ref(false);
 
 // 폼 데이터
@@ -41,6 +44,10 @@ const handleSubmit = async () => {
 };
 
 const handleOpen = (value: boolean) => {
+  if (!user.value) {
+    openAlert('로그인', '로그인 후 팀 생성이 가능합니다.');
+    return;
+  }
   open.value = value;
   if (value) {
     resetForm();
