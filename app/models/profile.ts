@@ -17,6 +17,7 @@ export interface ModeStat {
   bestTier: TierInfo;
   bestRankPoint: number;
   roundsPlayed: number;
+  avgKill: number;
   avgRank: number;
   avgSurvivalTime: number;
   top10Ratio: number;

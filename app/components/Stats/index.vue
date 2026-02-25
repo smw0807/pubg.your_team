@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ModeStat } from '~/models/profile';
-import { modeTextTransform } from '~/utils/textTransform';
+import type {ModeStat} from '~/models/profile';
+import {modeTextTransform} from '~/utils/textTransform';
 
-const { stat } = defineProps<{
+const {stat} = defineProps<{
   stat: ModeStat;
 }>();
 
@@ -30,7 +30,7 @@ const getTierColor = (tier: string) => {
 };
 
 const averageDamage = computed(() =>
-  Math.round(stat.damageDealt / stat.roundsPlayed)
+  Math.round(stat.damageDealt / stat.roundsPlayed),
 );
 </script>
 
@@ -47,8 +47,7 @@ const averageDamage = computed(() =>
       <div class="flex items-center gap-2">
         <span
           :class="getTierColor(stat.currentTier.tier)"
-          class="text-xl font-bold"
-        >
+          class="text-xl font-bold">
           {{ stat.currentTier.tier }}
         </span>
         <span class="text-sm text-gray-400">
@@ -66,8 +65,7 @@ const averageDamage = computed(() =>
       <div class="flex items-center gap-2">
         <span
           :class="getTierColor(stat.bestTier.tier)"
-          class="text-xl font-bold"
-        >
+          class="text-xl font-bold">
           {{ stat.bestTier.tier }}
         </span>
         <span class="text-sm text-gray-400">
@@ -83,32 +81,28 @@ const averageDamage = computed(() =>
   <!-- 게임 통계 -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
     <div
-      class="bg-blue-900/30 border border-blue-700/50 p-3 rounded-lg text-center"
-    >
+      class="bg-blue-900/30 border border-blue-700/50 p-3 rounded-lg text-center">
       <div class="text-2xl font-bold text-blue-400">
         {{ stat.roundsPlayed }}
       </div>
       <div class="text-xs text-gray-400">총 게임 수</div>
     </div>
     <div
-      class="bg-green-900/30 border border-green-700/50 p-3 rounded-lg text-center"
-    >
+      class="bg-green-900/30 border border-green-700/50 p-3 rounded-lg text-center">
       <div class="text-2xl font-bold text-green-400">
         {{ stat.wins }}
       </div>
       <div class="text-xs text-gray-400">승리</div>
     </div>
     <div
-      class="bg-yellow-900/30 border border-yellow-700/50 p-3 rounded-lg text-center"
-    >
+      class="bg-yellow-900/30 border border-yellow-700/50 p-3 rounded-lg text-center">
       <div class="text-2xl font-bold text-yellow-400">
         {{ formatRatio(stat.winRatio) }}
       </div>
       <div class="text-xs text-gray-400">승률</div>
     </div>
     <div
-      class="bg-purple-900/30 border border-purple-700/50 p-3 rounded-lg text-center"
-    >
+      class="bg-purple-900/30 border border-purple-700/50 p-3 rounded-lg text-center">
       <div class="text-2xl font-bold text-purple-400">
         {{ stat.avgRank.toFixed(1) }}
       </div>
@@ -121,16 +115,14 @@ const averageDamage = computed(() =>
     <h4 class="text-md font-semibold text-gray-500">전투 통계</h4>
     <div class="grid grid-cols-2 md:grid-cols-2 gap-3">
       <div
-        class="bg-orange-900/30 border border-orange-700/50 p-3 rounded-lg text-center"
-      >
+        class="bg-orange-900/30 border border-orange-700/50 p-3 rounded-lg text-center">
         <div class="text-xl font-bold text-orange-400">
-          {{ stat.kda.toFixed(2) }}
+          {{ stat.avgKill.toFixed(2) }}
         </div>
         <div class="text-xs text-gray-400">KDA</div>
       </div>
       <div
-        class="bg-orange-900/30 border border-orange-700/50 p-3 rounded-lg text-center"
-      >
+        class="bg-orange-900/30 border border-orange-700/50 p-3 rounded-lg text-center">
         <div class="text-xl font-bold text-orange-400">
           {{ averageDamage }}
         </div>
@@ -139,16 +131,14 @@ const averageDamage = computed(() =>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
       <div
-        class="bg-red-900/30 border border-red-700/50 p-3 rounded-lg text-center"
-      >
+        class="bg-red-900/30 border border-red-700/50 p-3 rounded-lg text-center">
         <div class="text-xl font-bold text-red-400">
           {{ stat.kills }}
         </div>
         <div class="text-xs text-gray-400">킬</div>
       </div>
       <div
-        class="bg-gray-800 border border-gray-700 p-3 rounded-lg text-center"
-      >
+        class="bg-gray-800 border border-gray-700 p-3 rounded-lg text-center">
         <div class="text-xl font-bold text-gray-300">
           {{ stat.deaths }}
         </div>
@@ -156,16 +146,14 @@ const averageDamage = computed(() =>
       </div>
 
       <div
-        class="bg-indigo-900/30 border border-indigo-700/50 p-3 rounded-lg text-center"
-      >
+        class="bg-indigo-900/30 border border-indigo-700/50 p-3 rounded-lg text-center">
         <div class="text-xl font-bold text-indigo-400">
           {{ stat.assists }}
         </div>
         <div class="text-xs text-gray-400">어시스트</div>
       </div>
       <div
-        class="bg-blue-900/30 border border-blue-700/50 p-4 rounded-lg text-center"
-      >
+        class="bg-blue-900/30 border border-blue-700/50 p-4 rounded-lg text-center">
         <div class="text-2xl font-bold text-blue-400">
           {{ formatNumber(Math.round(stat.damageDealt)) }}
         </div>
@@ -179,16 +167,14 @@ const averageDamage = computed(() =>
     <h4 class="text-md font-semibold text-gray-500">기타 통계</h4>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
       <div
-        class="bg-purple-900/30 border border-purple-700/50 p-4 rounded-lg text-center"
-      >
+        class="bg-purple-900/30 border border-purple-700/50 p-4 rounded-lg text-center">
         <div class="text-2xl font-bold text-purple-400">
           {{ stat.dBNOs }}
         </div>
         <div class="text-xs text-gray-400">다운</div>
       </div>
       <div
-        class="bg-gray-800 border border-gray-700 p-4 rounded-lg text-center"
-      >
+        class="bg-gray-800 border border-gray-700 p-4 rounded-lg text-center">
         <div class="text-2xl font-bold text-gray-300">
           {{ stat.teamKills }}
         </div>
