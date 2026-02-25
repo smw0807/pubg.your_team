@@ -119,7 +119,7 @@ const averageDamage = computed(() =>
         <div class="text-xl font-bold text-orange-400">
           {{ stat.avgKill.toFixed(2) }}
         </div>
-        <div class="text-xs text-gray-400">KDA</div>
+        <div class="text-xs text-gray-400">KD</div>
       </div>
       <div
         class="bg-orange-900/30 border border-orange-700/50 p-3 rounded-lg text-center">
