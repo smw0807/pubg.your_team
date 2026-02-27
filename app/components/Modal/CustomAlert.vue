@@ -4,7 +4,6 @@ import useAlert from '~/composables/useAlert';
 const { alertOpen, alertTitle, alertDescription, closeAlert } = useAlert();
 
 const handleUpdateOpen = (open: boolean) => {
-  console.log('handleUpdateOpen', open);
   alertOpen.value = open;
 };
 </script>

@@ -9,11 +9,12 @@ const { message, user } = defineProps<{
 
 // URL 감지 및 링크 변환 함수 (안전한 방법)
 const formatMessageWithLinks = (text: string) => {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
+  const urlSplitRegex = /(https?:\/\/[^\s]+)/g;
+  const urlPartRegex = /^https?:\/\/[^\s]+$/;
+  const parts = text.split(urlSplitRegex);
 
   return parts.map((part) => {
-    if (urlRegex.test(part)) {
+    if (urlPartRegex.test(part)) {
       return {
         type: 'link',
         url: part,

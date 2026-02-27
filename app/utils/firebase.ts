@@ -1,5 +1,14 @@
-import { initializeApp, type FirebaseOptions } from 'firebase/app';
+import {
+  getApp,
+  getApps,
+  initializeApp,
+  type FirebaseApp,
+  type FirebaseOptions,
+} from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
+
+let firebaseApp: FirebaseApp | null = null;
+let firebaseAnalytics: ReturnType<typeof getAnalytics> | null = null;
 
 export default function useFirebase() {
   const config = useRuntimeConfig();
@@ -14,13 +23,16 @@ export default function useFirebase() {
     measurementId: config.public.measurementId as string,
   };
 
-  const app = initializeApp(firebaseConfig);
-  let analytics = null;
-  if (import.meta.client) {
-    analytics = getAnalytics(app);
+  if (!firebaseApp) {
+    firebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   }
+
+  if (import.meta.client && !firebaseAnalytics) {
+    firebaseAnalytics = getAnalytics(firebaseApp);
+  }
+
   return {
-    app,
-    analytics,
+    app: firebaseApp,
+    analytics: firebaseAnalytics,
   };
 }

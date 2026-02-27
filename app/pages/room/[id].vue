@@ -28,6 +28,7 @@ const {
   leaveTeam,
   joinTeam,
   sendChatMessage,
+  cleanupWatchers,
 } = useChat();
 
 const { openConfirm } = useConfirm();
@@ -35,11 +36,16 @@ const { openAlert } = useAlert();
 
 onMounted(async () => {
   await getTeamInfo(id);
-  await joinTeam(id);
+  if (!team.value) return;
+
+  const joined = await joinTeam(id);
+  if (!joined) return;
+
   scrollToBottom();
 });
 
 onUnmounted(async () => {
+  cleanupWatchers();
   await leaveTeam(id);
 });
 

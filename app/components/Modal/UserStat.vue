@@ -122,12 +122,12 @@ const getBanTypeColor = (banType: string) => {
         <div v-if="stats" class="space-y-6">
           <!-- 스쿼드 스탯 -->
           <div v-if="stats.squad" class="space-y-4">
-            <Stats :stat="stats.squad" />
+            <Stats :stat="stats.squad" mode="squad" />
           </div>
 
           <!-- 듀오 스탯 (있는 경우) -->
           <div v-if="stats.duo" class="space-y-4">
-            <Stats :stat="stats.duo" />
+            <Stats :stat="stats.duo" mode="duo" />
           </div>
         </div>
 

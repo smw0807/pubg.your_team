@@ -2,8 +2,9 @@
 import type {ModeStat} from '~/models/profile';
 import {modeTextTransform} from '~/utils/textTransform';
 
-const {stat} = defineProps<{
+const {stat, mode} = defineProps<{
   stat: ModeStat;
+  mode: 'duo' | 'squad';
 }>();
 
 // 스탯 포맷팅 함수들
@@ -30,14 +31,14 @@ const getTierColor = (tier: string) => {
 };
 
 const averageDamage = computed(() =>
-  Math.round(stat.damageDealt / stat.roundsPlayed),
+  stat.roundsPlayed > 0 ? Math.round(stat.damageDealt / stat.roundsPlayed) : 0,
 );
 </script>
 
 <template>
   <h3 class="text-lg font-semibold text-blue-600 flex items-center gap-2">
     <UIcon name="i-heroicons-users" class="w-5 h-5" />
-    {{ modeTextTransform('squad') }} 모드
+    {{ modeTextTransform(mode) }} 모드
   </h3>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
