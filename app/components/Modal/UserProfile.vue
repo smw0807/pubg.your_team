@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import UserStat from '~/components/Modal/UserStat.vue';
 
-const { profile, setProfile } = useProfile();
+const { profile, getProfile, setProfile } = useProfile();
 
 const steamNickname = ref(profile?.value?.steamNickname || '');
 const kakaoNickname = ref(profile?.value?.kakaoNickname || '');
+
+onMounted(async () => {
+  await getProfile();
+});
 
 const handleSave = async () => {
   await setProfile(steamNickname.value, kakaoNickname.value);

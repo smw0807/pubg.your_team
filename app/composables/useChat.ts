@@ -1,8 +1,6 @@
 import {
   addDoc,
-  arrayRemove,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   getFirestore,
@@ -159,35 +157,27 @@ export default function useChat() {
     }
 
     const teamRef = doc(db, teamsCollection, id);
-    const data = await getTeam(id);
-    if (!data.exists()) {
-      hasJoinedTeam.value = false;
-      return;
-    }
 
-    await updateDoc(teamRef, {
-      members: arrayRemove(uid),
+    const shouldDelete = await runTransaction(db, async (transaction) => {
+      const snap = await transaction.get(teamRef);
+      if (!snap.exists()) return false;
+
+      const teamData = snap.data() as Team;
+      const remaining = teamData.members.filter((m) => m !== uid);
+
+      if (remaining.length === 0) {
+        transaction.delete(teamRef);
+        return true;
+      }
+
+      transaction.update(teamRef, { members: remaining });
+      return false;
     });
 
-    const updatedData = await getTeam(id);
-    if (!updatedData.exists()) {
-      hasJoinedTeam.value = false;
-      team.value = null;
-      return;
-    }
-
-    const teamData = updatedData.data() as Team;
-    if (teamData.members.length === 0) {
-      await deleteTeam(id);
-    }
-
     hasJoinedTeam.value = false;
-  };
-
-  // 팀 삭제
-  const deleteTeam = async (id: string) => {
-    await deleteDoc(doc(db, teamsCollection, id));
-    team.value = null;
+    if (shouldDelete) {
+      team.value = null;
+    }
   };
 
   // 팀 접속자 정보 데이터 변화 감지
@@ -202,11 +192,12 @@ export default function useChat() {
           }
           const data = doc.data() as Team;
           if (data.members) {
-            teamMembers.value = [];
-            for (const member of data.members) {
-              const profile = await searchProfile(member);
-              teamMembers.value.push(profile);
-            }
+            const profiles = await Promise.all(
+              data.members.map((member) => searchProfile(member))
+            );
+            teamMembers.value = profiles.filter(
+              (p): p is Profile => p !== null
+            );
           }
         }
       );

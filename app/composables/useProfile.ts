@@ -7,7 +7,7 @@ export default function useProfile() {
   const { app } = useFirebase();
   const db = getFirestore(app);
 
-  const { user, getUserInfo } = useAuth();
+  const { user } = useAuth();
 
   const profileInfo = ref<Profile | null>(null);
   const profile = computed<Profile | null>(() => profileInfo.value);
@@ -17,7 +17,7 @@ export default function useProfile() {
     const p = await getDoc(
       doc(db, profilesCollection, user.value?.uid as string)
     );
-    profileInfo.value = p.data() as Profile;
+    profileInfo.value = p.exists() ? (p.data() as Profile) : null;
     return profileInfo.value;
   };
 
@@ -39,13 +39,8 @@ export default function useProfile() {
 
   const searchProfile = async (id: string) => {
     const p = await getDoc(doc(db, profilesCollection, id));
-    return p.data() as Profile;
+    return p.exists() ? (p.data() as Profile) : null;
   };
-
-  onMounted(async () => {
-    await getUserInfo();
-    await getProfile();
-  });
 
   return {
     profile,

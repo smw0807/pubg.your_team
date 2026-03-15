@@ -11,13 +11,23 @@ import {
   type UserCredential,
 } from 'firebase/auth';
 
+// 모듈 스코프 싱글톤: 인증 상태는 앱 전체에서 공유
+let unsubscribeAuth: (() => void) | null = null;
+const userInfo = ref<User | null>(null);
+
 export default function useAuth() {
   const { app } = useFirebase();
   const auth: Auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  const userInfo = ref<User | null>(null);
   const user = computed<User | null>(() => userInfo.value);
+
+  // 아직 리스너가 등록되지 않은 경우에만 등록
+  if (!unsubscribeAuth) {
+    unsubscribeAuth = onAuthStateChanged(auth, (u) => {
+      userInfo.value = u;
+    });
+  }
 
   // 로그인
   const signIn = async () => {
@@ -35,41 +45,10 @@ export default function useAuth() {
     return result?.isNewUser || null;
   };
 
-  // 로그인 사용자 정보 가져오기
-  const getUserInfo = async () => {
-    return getAuth(app);
-  };
-
-  // 현재 로그인 사용자 확인
-  const currentUser = async (callback: (user: User | null) => void) => {
-    try {
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          callback(user);
-        } else {
-          callback(null);
-        }
-      });
-    } catch (error) {
-      callback(null);
-      console.error(error);
-      throw new Error('현재 사용자 정보 가져오기 실패');
-    }
-  };
-
-  currentUser((u) => {
-    if (u) {
-      userInfo.value = u;
-    } else {
-      userInfo.value = null;
-    }
-  });
-
   return {
     signIn,
     signOut: handleSignOut,
     isNewUser,
     user,
-    getUserInfo,
   };
 }
