@@ -3,12 +3,14 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
   onSnapshot,
   orderBy,
   query,
   runTransaction,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import useFirebase from '~/utils/firebase';
 import {
@@ -176,6 +178,13 @@ export default function useChat() {
 
     hasJoinedTeam.value = false;
     if (shouldDelete) {
+      const chatMessageCollection = collection(teamRef, chatMessagesCollection);
+      const messagesSnap = await getDocs(chatMessageCollection);
+      if (!messagesSnap.empty) {
+        const batch = writeBatch(db);
+        messagesSnap.docs.forEach((msgDoc) => batch.delete(msgDoc.ref));
+        await batch.commit();
+      }
       team.value = null;
     }
   };
