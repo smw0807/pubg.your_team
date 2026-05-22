@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/stats/(.*)",
-      "destination": "http://ec2-3-85-231-56.compute-1.amazonaws.com/api/stats/$1"
+      "destination": "https://pubg-api.org/api/stats/$1"
     }
   ]
 }
