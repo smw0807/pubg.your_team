@@ -11,8 +11,6 @@ export default defineEventHandler(async (event) => {
     platform: string;
     playerName: string;
   };
-  console.log('@@@@ platform : ', platform);
-  console.log('@@@@ playerName : ', playerName);
 
   if (!platform || !playerName) {
     throw createError({
