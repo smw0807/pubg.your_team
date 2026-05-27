@@ -14,8 +14,7 @@ const { user } = useAuth();
 
 const open = ref(false);
 
-// 폼 데이터
-const formData = ref<CreateTeam>({
+const INITIAL_FORM: CreateTeam = {
   title: '',
   description: '',
   mode: 'squad',
@@ -24,12 +23,17 @@ const formData = ref<CreateTeam>({
   platform: 'kakao',
   isRanked: true,
   members: [],
-});
+};
+const INITIAL_GAME_TYPE = 'ranked';
 
-// 게임 타입 선택을 위한 별도 상태
-const selectedGameType = ref('ranked');
+const formData = ref<CreateTeam>({ ...INITIAL_FORM });
+const selectedGameType = ref(INITIAL_GAME_TYPE);
 
-// 폼 제출
+const resetForm = () => {
+  selectedGameType.value = INITIAL_GAME_TYPE;
+  formData.value = { ...INITIAL_FORM };
+};
+
 const handleSubmit = async () => {
   try {
     const teamData: Team = {
@@ -49,20 +53,7 @@ const handleOpen = (value: boolean) => {
     return;
   }
   open.value = value;
-  if (value) {
-    resetForm();
-  }
-};
-
-const resetForm = () => {
-  selectedGameType.value = 'ranked';
-  formData.value.platform = 'kakao';
-  formData.value.isRanked = true;
-  formData.value.members = [];
-  formData.value.damage = null;
-  formData.value.tier = null;
-  formData.value.description = '';
-  formData.value.title = '';
+  if (value) resetForm();
 };
 </script>
 
@@ -81,7 +72,7 @@ const resetForm = () => {
       <div class="space-y-4">
         <div class="grid grid-cols-4 gap-4">
           <div>
-            <label class="block text-sm font-medium mb-1.5"> 플랫폼 * </label>
+            <label class="block text-sm font-medium mb-1.5">플랫폼 *</label>
             <USelect
               v-model="formData.platform"
               :items="platformOptions"
@@ -92,9 +83,7 @@ const resetForm = () => {
             />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1.5">
-              게임 타입 *
-            </label>
+            <label class="block text-sm font-medium mb-1.5">게임 타입 *</label>
             <USelect
               v-model="selectedGameType"
               :items="createGameTypeOptions"
@@ -105,9 +94,7 @@ const resetForm = () => {
             />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1.5">
-              게임 모드 *
-            </label>
+            <label class="block text-sm font-medium mb-1.5">게임 모드 *</label>
             <USelect
               v-model="formData.mode"
               :items="createGameModeOptions"
@@ -118,36 +105,20 @@ const resetForm = () => {
             />
           </div>
         </div>
-        <!-- 팀 제목 -->
+
         <div>
-          <label class="block text-sm font-medium mb-1.5"> 팀 제목 * </label>
-          <UInput
-            v-model="formData.title"
-            placeholder="팀 제목을 입력하세요"
-            size="md"
-            class="w-full"
-          />
+          <label class="block text-sm font-medium mb-1.5">팀 제목 *</label>
+          <UInput v-model="formData.title" placeholder="팀 제목을 입력하세요" size="md" class="w-full" />
         </div>
 
-        <!-- 팀 설명 -->
         <div>
-          <label class="block text-sm font-medium mb-1.5"> 팀 설명 </label>
-          <UTextarea
-            v-model="formData.description"
-            placeholder="팀에 대한 설명을 입력하세요"
-            :rows="2"
-            size="xl"
-            class="w-full"
-          />
+          <label class="block text-sm font-medium mb-1.5">팀 설명</label>
+          <UTextarea v-model="formData.description" placeholder="팀에 대한 설명을 입력하세요" :rows="2" size="xl" class="w-full" />
         </div>
 
-        <!-- 티어와 데미지 그룹 -->
         <div class="grid grid-cols-2 gap-3">
-          <!-- 티어 -->
           <div>
-            <label class="block text-sm font-medium mb-1.5">
-              원하는 티어
-            </label>
+            <label class="block text-sm font-medium mb-1.5">원하는 티어</label>
             <USelect
               v-model="formData.tier"
               :items="createTierOptions"
@@ -158,20 +129,9 @@ const resetForm = () => {
               class="w-full"
             />
           </div>
-
-          <!-- 데미지 -->
           <div>
-            <label class="block text-sm font-medium mb-1.5">
-              최소 데미지
-            </label>
-            <UInput
-              v-model.number="formData.damage"
-              type="number"
-              placeholder="0"
-              min="0"
-              size="md"
-              class="w-full"
-            />
+            <label class="block text-sm font-medium mb-1.5">최소 데미지</label>
+            <UInput v-model.number="formData.damage" type="number" placeholder="0" min="0" size="md" class="w-full" />
           </div>
         </div>
       </div>
@@ -179,20 +139,10 @@ const resetForm = () => {
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <UButton
-          :disabled="!formData.title || !formData.platform"
-          color="primary"
-          size="sm"
-          @click="handleSubmit"
-        >
+        <UButton :disabled="!formData.title || !formData.platform" color="primary" size="sm" @click="handleSubmit">
           팀 생성
         </UButton>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          @click="open = false"
-        >
+        <UButton color="neutral" variant="ghost" size="sm" @click="open = false">
           취소
         </UButton>
       </div>

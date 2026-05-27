@@ -13,10 +13,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import useFirebase from '~/utils/firebase';
-import {
-  teamsCollection,
-  chatMessagesCollection,
-} from '~/constants/collections';
+import { teamsCollection, chatMessagesCollection } from '~/constants/collections';
 import type { Team } from '~/models/team';
 import type { Profile } from '~/models/profile';
 import type { ChatMessage } from '~/models/chat';
@@ -27,51 +24,35 @@ export default function useChat() {
 
   const router = useRouter();
   const { openAlert } = useAlert();
-
   const { user } = useAuth();
   const { profile, getProfile, searchProfile } = useProfile();
 
   const team = ref<Team | null>(null);
   const teamMembers = ref<Profile[]>([]);
-
   const chatMessages = ref<ChatMessage[]>([]);
   const hasJoinedTeam = ref(false);
 
   let stopWatchingTeamMembers: (() => void) | null = null;
   let stopWatchingChatMessages: (() => void) | null = null;
 
-  // 팀 정보
-  const getTeam = async (id: string) => {
-    return await getDoc(doc(db, teamsCollection, id));
-  };
-
   const getTeamInfo = async (id: string) => {
-    const data = await getTeam(id);
+    const data = await getDoc(doc(db, teamsCollection, id));
     if (!data.exists()) {
       openAlert('존재하지 않는 팀입니다.');
       team.value = null;
       router.back();
       return;
     }
-    team.value = {
-      id: data.id,
-      ...(data.data() as Team),
-    } as Team;
+    team.value = { id: data.id, ...(data.data() as Team) } as Team;
   };
 
-  // 팀 입장 자리 있는지 체크
   const cleanupWatchers = () => {
-    if (stopWatchingTeamMembers) {
-      stopWatchingTeamMembers();
-      stopWatchingTeamMembers = null;
-    }
-    if (stopWatchingChatMessages) {
-      stopWatchingChatMessages();
-      stopWatchingChatMessages = null;
-    }
+    stopWatchingTeamMembers?.();
+    stopWatchingTeamMembers = null;
+    stopWatchingChatMessages?.();
+    stopWatchingChatMessages = null;
   };
 
-  // 팀 참여
   const joinTeam = async (id: string) => {
     const uid = user.value?.uid;
     if (!uid) {
@@ -81,26 +62,17 @@ export default function useChat() {
 
     await getProfile();
     if (!profile.value) {
-      openAlert(
-        '프로필 정보를 입력해주세요.',
-        '프로필 정보를 입력해야 팀 기능을 사용할 수 있습니다.'
-      );
+      openAlert('프로필 정보를 입력해주세요.', '프로필 정보를 입력해야 팀 기능을 사용할 수 있습니다.');
       router.back();
       return false;
     }
-    if (team.value?.platform === 'kakao' && !profile.value?.kakaoNickname) {
-      openAlert(
-        '카카오 닉네임을 입력해주세요.',
-        '카카오 팀찾기를 이용하려면 닉네임을 입력해야 합니다.'
-      );
+    if (team.value?.platform === 'kakao' && !profile.value.kakaoNickname) {
+      openAlert('카카오 닉네임을 입력해주세요.', '카카오 팀찾기를 이용하려면 닉네임을 입력해야 합니다.');
       router.back();
       return false;
     }
-    if (team.value?.platform === 'steam' && !profile.value?.steamNickname) {
-      openAlert(
-        '스팀 닉네임을 입력해주세요.',
-        '스팀 팀찾기를 이용하려면 닉네임을 입력해야 합니다.'
-      );
+    if (team.value?.platform === 'steam' && !profile.value.steamNickname) {
+      openAlert('스팀 닉네임을 입력해주세요.', '스팀 팀찾기를 이용하려면 닉네임을 입력해야 합니다.');
       router.back();
       return false;
     }
@@ -108,24 +80,15 @@ export default function useChat() {
     const teamRef = doc(db, teamsCollection, id);
     const joinResult = await runTransaction(db, async (transaction) => {
       const snap = await transaction.get(teamRef);
-      if (!snap.exists()) {
-        return 'not-found' as const;
-      }
+      if (!snap.exists()) return 'not-found' as const;
 
       const teamData = snap.data() as Team;
       const memberLimit = teamData.mode === 'duo' ? 2 : 4;
 
-      if (teamData.members.includes(uid)) {
-        return 'already-joined' as const;
-      }
+      if (teamData.members.includes(uid)) return 'already-joined' as const;
+      if (teamData.members.length >= memberLimit) return 'full' as const;
 
-      if (teamData.members.length >= memberLimit) {
-        return 'full' as const;
-      }
-
-      transaction.update(teamRef, {
-        members: [...teamData.members, uid],
-      });
+      transaction.update(teamRef, { members: [...teamData.members, uid] });
       return 'joined' as const;
     });
 
@@ -134,7 +97,6 @@ export default function useChat() {
       router.back();
       return false;
     }
-
     if (joinResult === 'full') {
       openAlert('팀 인원이 꽉 찼습니다.');
       router.back();
@@ -149,17 +111,13 @@ export default function useChat() {
     return true;
   };
 
-  // 팀 나가기
   const leaveTeam = async (id: string) => {
     const uid = user.value?.uid;
     cleanupWatchers();
 
-    if (!uid || !hasJoinedTeam.value) {
-      return;
-    }
+    if (!uid || !hasJoinedTeam.value) return;
 
     const teamRef = doc(db, teamsCollection, id);
-
     const shouldDelete = await runTransaction(db, async (transaction) => {
       const snap = await transaction.get(teamRef);
       if (!snap.exists()) return false;
@@ -171,7 +129,6 @@ export default function useChat() {
         transaction.delete(teamRef);
         return true;
       }
-
       transaction.update(teamRef, { members: remaining });
       return false;
     });
@@ -189,24 +146,19 @@ export default function useChat() {
     }
   };
 
-  // 팀 접속자 정보 데이터 변화 감지
   const watchTeamMembers = () => {
     try {
       stopWatchingTeamMembers = onSnapshot(
         doc(db, teamsCollection, team.value?.id as string),
-        async (doc) => {
-          if (!doc.exists()) {
+        async (snapshot) => {
+          if (!snapshot.exists()) {
             teamMembers.value = [];
             return;
           }
-          const data = doc.data() as Team;
+          const data = snapshot.data() as Team;
           if (data.members) {
-            const profiles = await Promise.all(
-              data.members.map((member) => searchProfile(member))
-            );
-            teamMembers.value = profiles.filter(
-              (p): p is Profile => p !== null
-            );
+            const profiles = await Promise.all(data.members.map((member) => searchProfile(member)));
+            teamMembers.value = profiles.filter((p): p is Profile => p !== null);
           }
         }
       );
@@ -215,52 +167,33 @@ export default function useChat() {
     }
   };
 
-  // 채팅 메시지 전송
   const sendChatMessage = async (message: string) => {
     const params: ChatMessage = {
       type: 'user',
       uid: user.value?.uid as string,
-      sender:
-        team.value?.platform === 'kakao'
-          ? profile.value?.kakaoNickname || ''
-          : profile.value?.steamNickname || '',
+      sender: team.value?.platform === 'kakao' ? profile.value?.kakaoNickname || '' : profile.value?.steamNickname || '',
       senderId: user.value?.uid as string,
       message,
       createdAt: new Date(),
     };
     const teamRef = doc(db, teamsCollection, team.value?.id as string);
-    const chatMessageCollection = collection(teamRef, chatMessagesCollection);
-    await addDoc(chatMessageCollection, params);
+    await addDoc(collection(teamRef, chatMessagesCollection), params);
   };
 
-  // 채팅 메시지 데이터 변화 감지
   const watchChatMessages = () => {
     try {
       const teamRef = doc(db, teamsCollection, team.value?.id as string);
-      const messageCollection = collection(teamRef, chatMessagesCollection);
-      const q = query(messageCollection, orderBy('createdAt', 'asc'));
+      const q = query(collection(teamRef, chatMessagesCollection), orderBy('createdAt', 'asc'));
       stopWatchingChatMessages = onSnapshot(q, (querySnapshot) => {
-        chatMessages.value = [];
-        querySnapshot.forEach((doc) => {
-          chatMessages.value.push({
-            ...(doc.data() as ChatMessage),
-            createdAt: doc.data().createdAt.toDate().toLocaleString(),
-          });
-        });
+        chatMessages.value = querySnapshot.docs.map((msgDoc) => ({
+          ...(msgDoc.data() as ChatMessage),
+          createdAt: msgDoc.data().createdAt.toDate().toLocaleString(),
+        }));
       });
     } catch (error) {
       console.error('채팅 메시지 데이터 변화 감지 실패:', error);
     }
   };
 
-  return {
-    team,
-    teamMembers,
-    chatMessages,
-    getTeamInfo,
-    joinTeam,
-    leaveTeam,
-    sendChatMessage,
-    cleanupWatchers,
-  };
+  return { team, teamMembers, chatMessages, getTeamInfo, joinTeam, leaveTeam, sendChatMessage, cleanupWatchers };
 }
