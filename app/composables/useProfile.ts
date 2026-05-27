@@ -9,32 +9,26 @@ export default function useProfile() {
 
   const { user } = useAuth();
 
-  const profileInfo = ref<Profile | null>(null);
-  const profile = computed<Profile | null>(() => profileInfo.value);
+  const profile = ref<Profile | null>(null);
 
   const getProfile = async () => {
     if (!user.value) return;
-    const p = await getDoc(
-      doc(db, profilesCollection, user.value?.uid as string)
-    );
-    profileInfo.value = p.exists() ? (p.data() as Profile) : null;
-    return profileInfo.value;
+    const p = await getDoc(doc(db, profilesCollection, user.value.uid));
+    profile.value = p.exists() ? (p.data() as Profile) : null;
+    return profile.value;
   };
 
   const setProfile = async (steamNickname: string, kakaoNickname: string) => {
     if (!user.value) return;
     const profileData: Profile = {
-      id: user.value?.uid as string,
-      name: user.value?.displayName as string,
-      email: user.value?.email as string,
+      id: user.value.uid,
+      name: user.value.displayName as string,
+      email: user.value.email as string,
       steamNickname,
       kakaoNickname,
     };
-
-    await setDoc(doc(db, profilesCollection, user.value?.uid as string), {
-      ...profileData,
-    });
-    profileInfo.value = profileData;
+    await setDoc(doc(db, profilesCollection, user.value.uid), { ...profileData });
+    profile.value = profileData;
   };
 
   const searchProfile = async (id: string) => {

@@ -22,15 +22,15 @@ const handleSignOut = async () => {
       <template v-if="user">
         <UserProfile />
         <UUser
-          :name="user?.displayName as string"
-          :description="user?.email as string"
-          :avatar="{ src: user?.photoURL as string }"
+          :name="user.displayName as string"
+          :description="user.email as string"
+          :avatar="{ src: user.photoURL as string }"
         />
         <UButton color="warning" variant="ghost" @click="handleSignOut">
           <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-6 h-6" />
         </UButton>
       </template>
-      <template v-if="!user">
+      <template v-else>
         <UButton color="info" @click="handleSignIn">Login</UButton>
       </template>
     </template>

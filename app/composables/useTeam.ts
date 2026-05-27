@@ -22,23 +22,14 @@ export default function useTeam() {
 
   const teamList = ref<Team[]>([]);
 
-  // 팀 리스트
-  const getTeams = async (
-    platform: Platform,
-    gameType: GameType,
-    gameMode: GameMode,
-    tier: Tier
-  ) => {
+  const getTeams = async (platform: Platform, gameType: GameType, gameMode: GameMode, tier: Tier) => {
     let q = query(
       collection(db, teamsCollection),
       where('platform', '==', platform),
       orderBy('createdAt', 'desc')
     );
     if (gameType !== 'all') {
-      q = query(
-        q,
-        where('isRanked', '==', gameType === 'ranked' ? true : false)
-      );
+      q = query(q, where('isRanked', '==', gameType === 'ranked'));
     }
     if (gameMode !== 'all') {
       q = query(q, where('mode', '==', gameMode));
@@ -47,36 +38,19 @@ export default function useTeam() {
       q = query(q, where('tier', '==', tier));
     }
     const teams = await getDocs(q);
-    teamList.value = teams.docs.map((doc) => {
-      return {
-        id: doc.id,
-        ...(doc.data() as Team),
-      } as Team;
-    }) as Team[];
+    teamList.value = teams.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Team) })) as Team[];
   };
 
-  // 팀 생성
   const createTeam = async (team: Team) => {
     try {
-      const params: CreateTeam = {
-        ...team,
-        members: [user.value?.uid as string],
-      };
+      const params: CreateTeam = { ...team, members: [user.value?.uid as string] };
       const result = await addDoc(collection(db, teamsCollection), params);
-      toast.add({
-        title: '팀이 생성되었습니다.',
-        color: 'success',
-        orientation: 'horizontal',
-      });
+      toast.add({ title: '팀이 생성되었습니다.', color: 'success', orientation: 'horizontal' });
       navigateTo(`/room/${result.id}`);
     } catch (error) {
       console.error(error);
     }
   };
 
-  return {
-    getTeams,
-    teamList,
-    createTeam,
-  };
+  return { getTeams, teamList, createTeam };
 }
