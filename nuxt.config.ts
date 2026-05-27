@@ -66,7 +66,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   icon: {
-    collections: ['lucide'],
+    collections: ['lucide', 'heroicons'],
     serverBundle: 'auto',
   },
 
@@ -97,13 +97,6 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     compressPublicAssets: true,
-    devProxy: {
-      '/api': {
-        target: process.env.API_URL,
-        changeOrigin: true,
-        prependPath: true,
-      },
-    },
   },
 
   site: {
@@ -114,6 +107,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    pubgApiKey: process.env.PUBG_API_KEY,
     public: {
       apiKey: process.env.FB_API_KEY,
       authDomain: process.env.FB_AUTH_DOMAIN,
@@ -123,7 +117,6 @@ export default defineNuxtConfig({
       appId: process.env.FB_APP_ID,
       measurementId: process.env.FB_MEASUREMENT_ID,
       matchUrl: process.env.MATCH_URL,
-      apiUrl: process.env.API_URL,
     },
   },
 });
