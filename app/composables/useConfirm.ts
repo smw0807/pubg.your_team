@@ -3,7 +3,9 @@ const globalConfirmState = {
   confirmOpen: ref(false),
   confirmTitle: ref('확인'),
   confirmDescription: ref(''),
-  confirmCallback: ref<(() => void) | null>(null),
+  confirmCallback: ref<(() => void | Promise<void>) | null>(null),
+  confirmPending: ref(false),
+  confirmError: ref(''),
 };
 
 export default function useConfirm() {
@@ -15,8 +17,10 @@ export default function useConfirm() {
   const openConfirm = (
     title: string,
     description?: string,
-    callback?: () => void
+    callback?: () => void | Promise<void>
   ) => {
+    if (globalConfirmState.confirmPending.value) return;
+    globalConfirmState.confirmError.value = '';
     confirmOpen.value = true;
     confirmTitle.value = title;
     confirmDescription.value = description || '';
@@ -24,15 +28,24 @@ export default function useConfirm() {
   };
 
   const closeConfirm = () => {
+    if (globalConfirmState.confirmPending.value) return;
     confirmOpen.value = false;
     confirmCallback.value = null;
   };
 
-  const handleConfirm = () => {
-    if (confirmCallback.value) {
-      confirmCallback.value();
+  const handleConfirm = async () => {
+    if (globalConfirmState.confirmPending.value) return;
+    globalConfirmState.confirmPending.value = true;
+    globalConfirmState.confirmError.value = '';
+    try {
+      await confirmCallback.value?.();
+      confirmOpen.value = false;
+      confirmCallback.value = null;
+    } catch {
+      globalConfirmState.confirmError.value = '완료하지 못했습니다. 연결 상태를 확인하고 다시 시도해주세요.';
+    } finally {
+      globalConfirmState.confirmPending.value = false;
     }
-    closeConfirm();
   };
 
   return {
@@ -42,5 +55,7 @@ export default function useConfirm() {
     openConfirm,
     closeConfirm,
     handleConfirm,
+    confirmPending: globalConfirmState.confirmPending,
+    confirmError: globalConfirmState.confirmError,
   };
 }

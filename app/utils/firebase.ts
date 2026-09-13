@@ -27,7 +27,7 @@ export default function useFirebase() {
     firebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   }
 
-  if (import.meta.client && !firebaseAnalytics) {
+  if (import.meta.client && config.public.measurementId && !firebaseAnalytics) {
     firebaseAnalytics = getAnalytics(firebaseApp);
   }
 

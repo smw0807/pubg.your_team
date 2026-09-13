@@ -101,6 +101,21 @@ service cloud.firestore {
       allow delete: if signedIn() && !active(resource.data)
         && resource.data.closedBy == request.auth.uid && resource.data.members == [];
 
+      match /PRESENCE/{uid} {
+        function closingOwner() {
+          let parent = get(/databases/$(database)/documents/TEAMS/$(teamId)).data;
+          return signedIn() && !active(parent) && parent.closedBy == request.auth.uid;
+        }
+        allow get: if owns(uid) || closingOwner();
+        allow list: if closingOwner();
+        allow create, update: if owns(uid)
+          && active(getAfter(/databases/$(database)/documents/TEAMS/$(teamId)).data)
+          && uid in getAfter(/databases/$(database)/documents/TEAMS/$(teamId)).data.members
+          && request.resource.data.keys().hasOnly(['lastSeen'])
+          && request.resource.data.lastSeen == request.time;
+        allow delete: if owns(uid) || closingOwner();
+      }
+
       match /CHAT_MESSAGES/{messageId} {
         function team() {
           return get(/databases/$(database)/documents/TEAMS/$(teamId)).data;

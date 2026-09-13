@@ -1,12 +1,13 @@
 import {
-  addDoc,
   collection,
+  doc,
   getDocs,
   getFirestore,
   orderBy,
   query,
   serverTimestamp,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import type { GameMode, GameType, Platform, Tier } from '~/models/common';
 import type { CreateTeam, Team } from '~/models/team';
@@ -19,7 +20,7 @@ export default function useTeam() {
   const db = getFirestore(app);
   const toast = useToast();
 
-  const { user } = useAuth();
+  const { waitForAuth } = useAuth();
   const { getProfile } = useProfile();
 
   const teamList = ref<Team[]>([]);
@@ -46,7 +47,7 @@ export default function useTeam() {
   };
 
   const createTeam = async (team: CreateTeam) => {
-    const uid = user.value?.uid;
+    const uid = (await waitForAuth())?.uid;
     if (!uid) throw new Error('로그인이 필요합니다.');
     const profile = await getProfile();
     const nickname = team.platform === 'steam' ? profile?.steamNickname : profile?.kakaoNickname;
@@ -62,7 +63,11 @@ export default function useTeam() {
       tier: team.tier, damage: team.damage, platform: team.platform,
       isRanked: team.isRanked, members: [uid], createdAt: serverTimestamp(),
     };
-    const result = await addDoc(collection(db, teamsCollection), params);
+    const result = doc(collection(db, teamsCollection));
+    const batch = writeBatch(db);
+    batch.set(result, params);
+    batch.set(doc(result, 'PRESENCE', uid), { lastSeen: serverTimestamp() });
+    await batch.commit();
     toast.add({ title: '팀이 생성되었습니다.', color: 'success', orientation: 'horizontal' });
     await navigateTo(`/room/${result.id}`);
   };
