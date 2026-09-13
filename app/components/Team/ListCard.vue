@@ -4,6 +4,7 @@ import { modeTextTransform } from '~/utils/textTransform';
 import useAlert from '~/composables/useAlert';
 
 const { openAlert } = useAlert();
+const { user } = useAuth();
 
 const { team } = defineProps<{
   team: Team;
@@ -88,7 +89,7 @@ const isFull = computed(() => {
 });
 
 const handleClick = () => {
-  if (isFull.value) {
+  if (isFull.value && !team.members.includes(user.value?.uid ?? '')) {
     openAlert('팀 인원이 꽉 찼습니다.');
     return;
   }
@@ -99,7 +100,12 @@ const handleClick = () => {
 <template>
   <UCard
     class="hover:shadow-lg transition-shadow cursor-pointer"
+    role="button"
+    tabindex="0"
+    :aria-label="`${team.title} 팀 입장`"
     @click="handleClick"
+    @keydown.enter.prevent="handleClick"
+    @keydown.space.prevent="handleClick"
   >
     <template #header>
       <div class="flex items-center gap-2">

@@ -30,7 +30,7 @@ try {
   }
   assert.ok(ready, 'Production server did not start');
   for (const [path, expected] of [
-    ['/', 200], ['/teams/steam', 200], ['/teams/kakao', 200], ['/test', 404],
+    ['/', 200], ['/teams/steam', 200], ['/teams/kakao', 200], ['/teams/invalid', 404], ['/test', 404],
     ['/api/internal/rooms/cleanup', 503],
     ['/api/stats/rank', 400],
     ['/api/stats/rank?platform=invalid&playerName=Player', 400],
