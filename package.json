@@ -27,6 +27,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@vercel/analytics": "^2.0.1",
     "firebase": "^12.19.0",
+    "firebase-admin": "^14.4.0",
     "nuxt": "^4.5.2",
     "pubg-kit": "^1.4.4",
     "tailwindcss": "^4.3.3",
@@ -37,7 +38,6 @@
     "@firebase/rules-unit-testing": "^5.0.2",
     "@nuxt/eslint": "^1.17.0",
     "eslint": "^10.10.0",
-    "firebase-admin": "^14.4.0",
     "firebase-tools": "^15.30.0",
     "typescript": "~5.9.3",
     "vue-tsc": "^3.3.11"

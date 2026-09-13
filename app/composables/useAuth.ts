@@ -1,54 +1,48 @@
-import useFirebase from '~/utils/firebase';
+import { computed, ref, shallowRef } from 'vue';
 import {
-  getAdditionalUserInfo,
-  getAuth,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut,
-  type Auth,
-  type User,
-  type UserCredential,
+  getAdditionalUserInfo, getAuth, GoogleAuthProvider, onAuthStateChanged,
+  signInWithPopup, signOut, type Auth, type User, type UserCredential,
 } from 'firebase/auth';
+import useFirebase from '~/utils/firebase';
+import { signOutAfterCleanup, waitForInitialAuth } from '~/services/authReady';
 
-// 모듈 스코프 싱글톤: 인증 상태는 앱 전체에서 공유
-let unsubscribeAuth: (() => void) | null = null;
-const userInfo = ref<User | null>(null);
+function createSession(auth: Auth) {
+  const user = shallowRef<User | null>(null);
+  const ready = ref(false);
+  onAuthStateChanged(auth, (current) => {
+    user.value = current;
+    ready.value = true;
+  });
+  const wait = async () => {
+    user.value = await waitForInitialAuth(auth);
+    ready.value = true;
+    return user.value;
+  };
+  return { user, ready, wait, beforeSignOut: new Set<() => Promise<void>>() };
+}
+
+// Browser Auth instances only: no user state shared between SSR requests.
+const sessions = new WeakMap<Auth, ReturnType<typeof createSession>>();
 
 export default function useAuth() {
   const { app } = useFirebase();
-  const auth: Auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-
-  const user = computed<User | null>(() => userInfo.value);
-
-  // 아직 리스너가 등록되지 않은 경우에만 등록
-  if (!unsubscribeAuth) {
-    unsubscribeAuth = onAuthStateChanged(auth, (u) => {
-      userInfo.value = u;
-    });
+  const auth = import.meta.client ? getAuth(app) : null;
+  let session = auth ? sessions.get(auth) : undefined;
+  if (auth && !session) {
+    session = createSession(auth);
+    sessions.set(auth, session);
   }
-
-  // 로그인
-  const signIn = async () => {
-    await signInWithPopup(auth, provider);
-  };
-
-  // 로그아웃
-  const handleSignOut = async () => {
-    await signOut(auth);
-  };
-
-  // 첫 로그인 여부 확인
-  const isNewUser = async (user: UserCredential) => {
-    const result = getAdditionalUserInfo(user);
-    return result?.isNewUser || null;
-  };
-
+  const current = session;
   return {
-    signIn,
-    signOut: handleSignOut,
-    isNewUser,
-    user,
+    user: computed(() => current?.user.value ?? null),
+    isAuthReady: computed(() => current?.ready.value ?? false),
+    waitForAuth: () => current?.wait() ?? Promise.resolve(null),
+    signIn: async () => { if (auth) await signInWithPopup(auth, new GoogleAuthProvider()); },
+    signOut: () => signOutAfterCleanup(current?.beforeSignOut ?? [], async () => { if (auth) await signOut(auth); }),
+    onBeforeSignOut: (callback: () => Promise<void>) => {
+      current?.beforeSignOut.add(callback);
+      return () => { current?.beforeSignOut.delete(callback); };
+    },
+    isNewUser: async (user: UserCredential) => getAdditionalUserInfo(user)?.isNewUser ?? false,
   };
 }

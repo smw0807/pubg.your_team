@@ -10,7 +10,7 @@ await new Promise((resolve) => probe.close(resolve));
 
 // Intentionally unset the runtime key. Smoke tests must never call the real PUBG API.
 const server = spawn(process.execPath, ['.output/server/index.mjs'], {
-  env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), NUXT_PUBG_API_KEY: '' },
+  env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), NUXT_PUBG_API_KEY: '', ROOM_CLEANUP_ENABLED: 'false' },
   stdio: 'ignore',
 });
 const exited = new Promise((resolve) => server.once('exit', resolve));
@@ -31,6 +31,7 @@ try {
   assert.ok(ready, 'Production server did not start');
   for (const [path, expected] of [
     ['/', 200], ['/teams/steam', 200], ['/teams/kakao', 200], ['/test', 404],
+    ['/api/internal/rooms/cleanup', 503],
     ['/api/stats/rank', 400],
     ['/api/stats/rank?platform=invalid&playerName=Player', 400],
     ['/api/stats/rank?platform=steam&platform=kakao&playerName=Player', 400],
