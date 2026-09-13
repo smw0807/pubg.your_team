@@ -2,6 +2,8 @@
 import UserStat from '~/components/Modal/UserStat.vue';
 
 const { profile, getProfile, setProfile } = useProfile();
+const { openAlert } = useAlert();
+const isSaving = ref(false);
 
 const steamNickname = ref(profile.value?.steamNickname || '');
 const kakaoNickname = ref(profile.value?.kakaoNickname || '');
@@ -11,7 +13,16 @@ onMounted(async () => {
 });
 
 const handleSave = async () => {
-  await setProfile(steamNickname.value, kakaoNickname.value);
+  if (isSaving.value) return;
+  isSaving.value = true;
+  try {
+    await setProfile(steamNickname.value, kakaoNickname.value);
+    openAlert('저장 완료', '게임 닉네임이 저장되었습니다.');
+  } catch (error) {
+    openAlert('저장 실패', error instanceof Error ? error.message : '다시 시도해주세요.');
+  } finally {
+    isSaving.value = false;
+  }
 };
 
 watch(profile, () => {
@@ -49,7 +60,7 @@ watch(profile, () => {
 
     <template #footer>
       <div class="flex justify-end">
-        <UButton label="저장" color="info" variant="outline" @click="handleSave" />
+        <UButton label="저장" :loading="isSaving" :disabled="isSaving" color="info" variant="outline" @click="handleSave" />
       </div>
     </template>
   </UModal>

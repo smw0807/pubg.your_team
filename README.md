@@ -88,7 +88,7 @@ app/
 
 ### 필수 요구사항
 
-- Node.js 18+
+- Node.js 24.11+ (24.x, `.nvmrc` 참고)
 - Yarn 패키지 매니저
 - Firebase 프로젝트
 - PUBG API 키
@@ -109,7 +109,7 @@ yarn install
 ```
 
 3. **환경 변수 설정**
-   `.env` 파일을 생성하고 다음 변수들을 설정하세요:
+   `.env.example`을 참고해 `.env` 파일을 생성하고 다음 변수들을 설정하세요:
 
 ```env
 # Firebase 설정
@@ -123,7 +123,7 @@ FB_MEASUREMENT_ID=your_measurement_id
 
 # PUBG API
 MATCH_URL=your_pubg_api_url
-API_URL=your_api_proxy_url
+PUBG_API_KEY=your_server_only_pubg_api_key
 ```
 
 4. **개발 서버 실행**
@@ -157,6 +157,12 @@ yarn build
 - **Firestore 실시간 리스너**: 실시간 메시지 동기화
 
 ## 🌐 배포
+
+기존 서비스에 이 버전을 반영할 때는 [보안 규칙·프로필 이전 절차](docs/security-rollout.md)를 먼저 수행하세요. 규칙과 앱을 함께 반영해야 하며, 기존 `PROFILES`의 개인정보는 본인 외 접근이 차단됩니다.
+
+배포 전 검증: `yarn lint`, `yarn typecheck`, `yarn test` (Java 21 필요), `yarn build`, `yarn test:smoke`.
+
+개발용 `/test` 라우트는 모든 빌드에서 제외됩니다. Nuxt DevTools는 기본적으로 비활성화되어 있습니다.
 
 이 프로젝트는 Vercel을 통해 배포됩니다:
 

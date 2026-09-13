@@ -72,7 +72,7 @@ const formatMessageWithLinks = (text: string) => {
         class="text-xs mt-2 opacity-75"
         :class="message.uid === user?.uid ? 'text-right' : 'text-left'"
       >
-        {{ message.createdAt }}
+        {{ message.createdAt.toLocaleString() }}
       </div>
 
       <!-- 말풍선 꼬리 -->

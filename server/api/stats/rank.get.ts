@@ -7,19 +7,22 @@ import type {
 import type { Stat, ModeStat } from '~/models/profile';
 
 export default defineEventHandler(async (event) => {
-  const { platform, playerName } = getQuery(event) as {
-    platform: string;
-    playerName: string;
-  };
+  const { platform, playerName } = getQuery(event);
 
-  if (!platform || !playerName) {
+  if (
+    typeof platform !== 'string' || !['steam', 'kakao'].includes(platform)
+    || typeof playerName !== 'string' || !/^[A-Za-z0-9_-]{3,64}$/.test(playerName)
+  ) {
     throw createError({
       statusCode: 400,
-      message: 'platform과 playerName은 필수입니다.',
+      message: '지원하는 플랫폼과 올바른 게임 닉네임을 입력해주세요.',
     });
   }
 
   const apiKey = useRuntimeConfig().pubgApiKey as string;
+  if (!apiKey?.trim()) {
+    throw createError({ statusCode: 503, message: '전적 조회 서비스가 아직 설정되지 않았습니다.' });
+  }
   const client = new PubgClient({ apiKey });
   const shard = client.shard(platform as PlatformShard);
 

@@ -5,11 +5,12 @@ import {
   getDoc,
   getDocs,
   getFirestore,
+  limit,
   onSnapshot,
   orderBy,
   query,
   runTransaction,
-  updateDoc,
+  serverTimestamp,
   writeBatch,
 } from 'firebase/firestore';
 import useFirebase from '~/utils/firebase';
@@ -37,7 +38,7 @@ export default function useChat() {
 
   const getTeamInfo = async (id: string) => {
     const data = await getDoc(doc(db, teamsCollection, id));
-    if (!data.exists()) {
+    if (!data.exists() || data.data().closedAt) {
       openAlert('존재하지 않는 팀입니다.');
       team.value = null;
       router.back();
@@ -83,6 +84,7 @@ export default function useChat() {
       if (!snap.exists()) return 'not-found' as const;
 
       const teamData = snap.data() as Team;
+      if (teamData.closedAt) return 'not-found' as const;
       const memberLimit = teamData.mode === 'duo' ? 2 : 4;
 
       if (teamData.members.includes(uid)) return 'already-joined' as const;
@@ -123,10 +125,13 @@ export default function useChat() {
       if (!snap.exists()) return false;
 
       const teamData = snap.data() as Team;
+      if (teamData.closedAt) return teamData.closedBy === uid;
       const remaining = teamData.members.filter((m) => m !== uid);
 
       if (remaining.length === 0) {
-        transaction.delete(teamRef);
+        // Keep the parent while deleting messages, so rules can still verify
+        // who is allowed to clean up. Closing also prevents concurrent joins.
+        transaction.update(teamRef, { members: [], closedAt: serverTimestamp(), closedBy: uid });
         return true;
       }
       transaction.update(teamRef, { members: remaining });
@@ -136,12 +141,19 @@ export default function useChat() {
     hasJoinedTeam.value = false;
     if (shouldDelete) {
       const chatMessageCollection = collection(teamRef, chatMessagesCollection);
-      const messagesSnap = await getDocs(chatMessageCollection);
-      if (!messagesSnap.empty) {
+      while (true) {
+        const messagesSnap = await getDocs(query(chatMessageCollection, limit(400)));
+        if (messagesSnap.empty) break;
         const batch = writeBatch(db);
         messagesSnap.docs.forEach((msgDoc) => batch.delete(msgDoc.ref));
         await batch.commit();
       }
+      await runTransaction(db, async (transaction) => {
+        const snap = await transaction.get(teamRef);
+        if (snap.exists() && snap.data().closedBy === uid && snap.data().members.length === 0) {
+          transaction.delete(teamRef);
+        }
+      });
       team.value = null;
     }
   };
@@ -168,13 +180,21 @@ export default function useChat() {
   };
 
   const sendChatMessage = async (message: string) => {
-    const params: ChatMessage = {
+    const text = message.trim();
+    if (!user.value || !hasJoinedTeam.value || !team.value?.id) {
+      throw new Error('팀에 입장한 후 메시지를 보낼 수 있습니다.');
+    }
+    if (!text || text.length > 2000) throw new Error('메시지는 1~2000자로 입력해주세요.');
+    // The nickname may have changed in the header or another tab. Rules compare
+    // the sender with the current public profile, not the room's cached copy.
+    const currentProfile = await getProfile();
+    const params = {
       type: 'user',
       uid: user.value?.uid as string,
-      sender: team.value?.platform === 'kakao' ? profile.value?.kakaoNickname || '' : profile.value?.steamNickname || '',
+      sender: team.value.platform === 'kakao' ? currentProfile?.kakaoNickname || '' : currentProfile?.steamNickname || '',
       senderId: user.value?.uid as string,
-      message,
-      createdAt: new Date(),
+      message: text,
+      createdAt: serverTimestamp(),
     };
     const teamRef = doc(db, teamsCollection, team.value?.id as string);
     await addDoc(collection(teamRef, chatMessagesCollection), params);
@@ -187,7 +207,7 @@ export default function useChat() {
       stopWatchingChatMessages = onSnapshot(q, (querySnapshot) => {
         chatMessages.value = querySnapshot.docs.map((msgDoc) => ({
           ...(msgDoc.data() as ChatMessage),
-          createdAt: msgDoc.data().createdAt.toDate().toLocaleString(),
+          createdAt: msgDoc.data({ serverTimestamps: 'estimate' }).createdAt?.toDate() ?? new Date(),
         }));
       });
     } catch (error) {

@@ -3,18 +3,24 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   modules: [
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/ui',
     '@nuxt/icon',
-    '@nuxt/scripts',
-    '@pinia/nuxt',
-    '@vueuse/nuxt',
     '@nuxtjs/sitemap',
+    '@vercel/analytics/nuxt',
   ],
+
+  // Never expose the legacy data-seeding UI as an application route.
+  hooks: {
+    'pages:extend'(pages) {
+      const testPage = pages.findIndex((page) => page.path === '/test');
+      if (testPage !== -1) pages.splice(testPage, 1);
+    },
+  },
 
   app: {
     head: {
