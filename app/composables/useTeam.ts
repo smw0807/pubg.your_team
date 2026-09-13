@@ -1,16 +1,11 @@
 import {
   collection,
   doc,
-  getDocs,
   getFirestore,
-  orderBy,
-  query,
   serverTimestamp,
-  where,
   writeBatch,
 } from 'firebase/firestore';
-import type { GameMode, GameType, Platform, Tier } from '~/models/common';
-import type { CreateTeam, Team } from '~/models/team';
+import type { CreateTeam } from '~/models/team';
 import useAuth from '~/composables/useAuth';
 import useFirebase from '~/utils/firebase';
 import { teamsCollection } from '~/constants/collections';
@@ -22,29 +17,6 @@ export default function useTeam() {
 
   const { waitForAuth } = useAuth();
   const { getProfile } = useProfile();
-
-  const teamList = ref<Team[]>([]);
-
-  const getTeams = async (platform: Platform, gameType: GameType, gameMode: GameMode, tier: Tier) => {
-    let q = query(
-      collection(db, teamsCollection),
-      where('platform', '==', platform),
-      orderBy('createdAt', 'desc')
-    );
-    if (gameType !== 'all') {
-      q = query(q, where('isRanked', '==', gameType === 'ranked'));
-    }
-    if (gameMode !== 'all') {
-      q = query(q, where('mode', '==', gameMode));
-    }
-    if (tier !== 'all') {
-      q = query(q, where('tier', '==', tier));
-    }
-    const teams = await getDocs(q);
-    teamList.value = teams.docs
-      .filter((doc) => !doc.data().closedAt)
-      .map((doc) => ({ ...doc.data(), id: doc.id }) as Team);
-  };
 
   const createTeam = async (team: CreateTeam) => {
     const uid = (await waitForAuth())?.uid;
@@ -72,5 +44,5 @@ export default function useTeam() {
     await navigateTo(`/room/${result.id}`);
   };
 
-  return { getTeams, teamList, createTeam };
+  return { createTeam };
 }
