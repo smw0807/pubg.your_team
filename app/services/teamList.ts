@@ -1,4 +1,4 @@
-import { collection, onSnapshot, orderBy, query, where, type Firestore } from 'firebase/firestore';
+import { collection, documentId, limit, onSnapshot, orderBy, query, startAfter, where, type Firestore, type QueryDocumentSnapshot } from 'firebase/firestore';
 import type { GameMode, GameType, Platform, Tier } from '../models/common.ts';
 import type { Team } from '../models/team.ts';
 import { readTeam } from './room.ts';
@@ -10,25 +10,32 @@ export interface TeamFilters {
   tier: Tier;
 }
 
+export const TEAM_PAGE_SIZE = 20;
+export interface TeamPage { cursor: QueryDocumentSnapshot | null; hasNext: boolean }
+
 export type SubscribeTeams = (
   filters: TeamFilters,
-  next: (teams: Team[], fromCache: boolean) => void,
+  next: (teams: Team[], fromCache: boolean, page?: TeamPage) => void,
   error: (error: unknown) => void,
+  cursor?: QueryDocumentSnapshot | null,
 ) => () => void;
 
-export function teamListQuery(db: Firestore, filters: TeamFilters) {
-  let result = query(collection(db, 'TEAMS'), where('platform', '==', filters.platform), orderBy('createdAt', 'desc'));
+export function teamListQuery(db: Firestore, filters: TeamFilters, cursor?: QueryDocumentSnapshot | null) {
+  let result = query(collection(db, 'TEAMS'), where('platform', '==', filters.platform), orderBy('createdAt', 'desc'), orderBy(documentId(), 'desc'), limit(TEAM_PAGE_SIZE + 1));
   if (filters.gameType !== 'all') result = query(result, where('isRanked', '==', filters.gameType === 'ranked'));
   if (filters.mode !== 'all') result = query(result, where('mode', '==', filters.mode));
   if (filters.tier !== 'all') result = query(result, where('tier', '==', filters.tier));
+  if (cursor) result = query(result, startAfter(cursor));
   return result;
 }
 
 export function subscribeTeams(db: Firestore): SubscribeTeams {
-  return (filters, next, error) => onSnapshot(teamListQuery(db, filters), { includeMetadataChanges: true }, (snapshot) => {
+  return (filters, next, error, cursor) => onSnapshot(teamListQuery(db, filters, cursor), { includeMetadataChanges: true }, (snapshot) => {
     try {
-      const teams = snapshot.docs.filter((entry) => !entry.data().closedAt).map((entry) => readTeam(entry.id, entry.data()));
-      next(teams, snapshot.metadata.fromCache);
+      const entries = snapshot.docs.slice(0, TEAM_PAGE_SIZE);
+      const teams = entries.filter((entry) => !entry.data().closedAt).map((entry) => readTeam(entry.id, entry.data()));
+      // Advance with the last raw document, even if every room on this page closed.
+      next(teams, snapshot.metadata.fromCache, { cursor: entries.at(-1) ?? null, hasNext: snapshot.size > TEAM_PAGE_SIZE });
     } catch (cause) { error(cause); }
   }, error);
 }

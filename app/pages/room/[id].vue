@@ -20,7 +20,7 @@ useHead({
 
 const router = useRouter();
 const { user } = useAuth();
-const { team, teamMembers, chatMessages, phase, errorMessage, connectionError, isOffline, leaveTeam, joinTeam, retryConnection, sendChatMessage } = useChat();
+const { team, teamMembers, chatMessages, hasOlderMessages, isLoadingOlder, historyError, historyNotice, chatFromCache, loadOlderMessages, phase, errorMessage, connectionError, isOffline, leaveTeam, joinTeam, retryConnection, sendChatMessage } = useChat();
 const { openConfirm } = useConfirm();
 const { openAlert } = useAlert();
 
@@ -110,7 +110,7 @@ const handleCopyNickname = async (nickname: string) => {
         </aside>
 
         <!-- 채팅 섹션 -->
-        <ChatPanel class="min-h-0 flex-1" :messages="chatMessages" :user="user" :disabled="isOffline || phase !== 'joined'" :send="sendChatMessage" @error="openAlert('메시지 전송 실패', roomErrorMessage($event))" />
+        <ChatPanel class="min-h-0 flex-1" :messages="chatMessages" :user="user" :disabled="isOffline || phase !== 'joined'" :send="sendChatMessage" :has-older="hasOlderMessages" :loading-older="isLoadingOlder" :history-error="historyError" :history-notice="historyNotice" :history-disabled="isOffline || chatFromCache || phase !== 'joined'" :load-older="loadOlderMessages" @error="openAlert('메시지 전송 실패', roomErrorMessage($event))" />
       </div>
     </template>
   </div>

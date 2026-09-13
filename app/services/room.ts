@@ -27,6 +27,11 @@ export function readTeam(id: string, data: Record<string, unknown>): Team {
   return { ...data, id, createdAt } as Team;
 }
 
+export function roomSnapshotState(data: Record<string, unknown> | undefined, uid: string, metadata: { fromCache: boolean; hasPendingWrites: boolean }): 'active' | 'ended' | 'unconfirmed' {
+  if (data && !data.closedAt && Array.isArray(data.members) && data.members.includes(uid)) return 'active';
+  return metadata.fromCache || metadata.hasPendingWrites ? 'unconfirmed' : 'ended';
+}
+
 export async function fetchRoom(db: Firestore, id: string): Promise<Team> {
   const snapshot = await getDoc(doc(db, 'TEAMS', id));
   if (!snapshot.exists() || snapshot.data().closedAt) throw new RoomError('존재하지 않거나 종료된 팀입니다.');

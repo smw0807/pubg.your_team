@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import useAuth from '~/composables/useAuth';
-import UserProfile from '~/components/Modal/UserProfile.vue';
 
 const { signIn, user, signOut, isAuthReady } = useAuth();
 const { openConfirm } = useConfirm();
 const { openAlert } = useAlert();
 const isSigningIn = ref(false);
 const menuOpen = ref(false);
+const profileOpen = ref(false);
 
 const handleSignIn = async () => {
   if (isSigningIn.value) return;
@@ -31,7 +31,7 @@ const handleSignOut = async () => {
     </template>
     <template #right>
       <template v-if="user">
-        <UserProfile />
+        <UButton color="info" variant="ghost" aria-label="게임 닉네임 관리" class="min-h-11 min-w-11 justify-center" icon="i-heroicons-user-circle" @click="menuOpen = false; profileOpen = true" />
         <UUser
           class="hidden xl:flex"
           :name="user.displayName as string"
@@ -53,4 +53,5 @@ const handleSignOut = async () => {
       <p v-if="user" class="mt-6 text-sm text-muted break-all">{{ user.displayName }}</p>
     </template>
   </UHeader>
+  <LazyModalUserProfile v-if="profileOpen && user" v-model:open="profileOpen" />
 </template>
