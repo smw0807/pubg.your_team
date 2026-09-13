@@ -49,6 +49,7 @@ const handleCopyNickname = (nickname: string) => {
 };
 
 const newMessage = ref('');
+const isSending = ref(false);
 const chatContainer = ref<HTMLElement>();
 
 const scrollToBottom = () => {
@@ -60,10 +61,18 @@ const scrollToBottom = () => {
 };
 
 const sendMessage = async () => {
-  if (!newMessage.value.trim()) return;
-  await sendChatMessage(newMessage.value);
-  scrollToBottom();
-  newMessage.value = '';
+  if (isSending.value || !newMessage.value.trim()) return;
+  isSending.value = true;
+  const submitted = newMessage.value;
+  try {
+    await sendChatMessage(submitted);
+    scrollToBottom();
+    if (newMessage.value === submitted) newMessage.value = '';
+  } catch (error) {
+    openAlert('메시지 전송 실패', error instanceof Error ? error.message : '다시 시도해주세요.');
+  } finally {
+    isSending.value = false;
+  }
 };
 
 watch(chatMessages, scrollToBottom);
@@ -122,6 +131,7 @@ watch(chatMessages, scrollToBottom);
             <div class="flex gap-3">
               <UInput
                 v-model="newMessage"
+                :maxlength="2000"
                 placeholder="메시지를 입력하세요..."
                 class="flex-1"
                 size="lg"
@@ -131,7 +141,8 @@ watch(chatMessages, scrollToBottom);
                 color="primary"
                 size="lg"
                 icon="i-heroicons-paper-airplane"
-                :disabled="!newMessage.trim()"
+                :loading="isSending"
+                :disabled="isSending || !newMessage.trim()"
                 @click="sendMessage"
               >
                 전송

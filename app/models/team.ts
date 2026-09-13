@@ -1,3 +1,5 @@
+import type { Timestamp } from 'firebase/firestore';
+
 export interface Team {
   id?: string;
   title: string;
@@ -9,6 +11,8 @@ export interface Team {
   isRanked: boolean;
   members: string[];
   createdAt: Date;
+  closedAt?: Timestamp;
+  closedBy?: string;
 }
 
-export type CreateTeam = Omit<Team, 'id' | 'createdAt'>;
+export type CreateTeam = Omit<Team, 'id' | 'createdAt' | 'closedAt' | 'closedBy'>;

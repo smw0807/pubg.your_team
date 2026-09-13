@@ -6,13 +6,14 @@ import {
   createTierOptions,
   platformOptions,
 } from '~/constants/options';
-import type { CreateTeam, Team } from '~/models/team';
+import type { CreateTeam } from '~/models/team';
 
 const { createTeam } = useTeam();
 const { openAlert } = useAlert();
 const { user } = useAuth();
 
 const open = ref(false);
+const isSubmitting = ref(false);
 
 const INITIAL_FORM: CreateTeam = {
   title: '',
@@ -35,15 +36,18 @@ const resetForm = () => {
 };
 
 const handleSubmit = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
   try {
-    const teamData: Team = {
+    const teamData: CreateTeam = {
       ...formData.value,
       isRanked: selectedGameType.value === 'ranked',
-      createdAt: new Date(),
     };
     await createTeam(teamData);
   } catch (error) {
-    console.error('팀 생성 실패:', error);
+    openAlert('팀 생성 실패', error instanceof Error ? error.message : '다시 시도해주세요.');
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
@@ -139,7 +143,7 @@ const handleOpen = (value: boolean) => {
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <UButton :disabled="!formData.title || !formData.platform" color="primary" size="sm" @click="handleSubmit">
+        <UButton :loading="isSubmitting" :disabled="isSubmitting || !formData.title.trim() || !formData.platform" color="primary" size="sm" @click="handleSubmit">
           팀 생성
         </UButton>
         <UButton color="neutral" variant="ghost" size="sm" @click="open = false">

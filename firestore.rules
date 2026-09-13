@@ -1,0 +1,139 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function owns(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function active(team) {
+      return !('closedAt' in team);
+    }
+
+    function capacity(team) {
+      return team.mode == 'duo' ? 2 : 4;
+    }
+
+    function hasNickname(platform) {
+      let profile = get(/databases/$(database)/documents/PUBLIC_PROFILES/$(request.auth.uid)).data;
+      return (platform == 'steam' && profile.steamNickname.size() > 0)
+        || (platform == 'kakao' && profile.kakaoNickname.size() > 0);
+    }
+
+    function validProfile(data, uid) {
+      return data.keys().hasAll(['id', 'steamNickname', 'kakaoNickname'])
+        && data.keys().hasOnly(['id', 'steamNickname', 'kakaoNickname'])
+        && data.id == uid
+        && data.steamNickname is string && data.steamNickname.size() <= 64
+        && data.kakaoNickname is string && data.kakaoNickname.size() <= 64
+        && (data.steamNickname == '' || data.steamNickname.matches('.*\\S.*'))
+        && (data.kakaoNickname == '' || data.kakaoNickname.matches('.*\\S.*'));
+    }
+
+    // Historical documents contain Google names and email addresses.
+    // Owners may migrate their nicknames; clients may not list or rewrite them.
+    match /PROFILES/{uid} {
+      allow get: if owns(uid);
+      allow list, write: if false;
+    }
+
+    match /PUBLIC_PROFILES/{uid} {
+      allow get: if signedIn() && (
+        !exists(/databases/$(database)/documents/PUBLIC_PROFILES/$(uid))
+        || validProfile(resource.data, uid)
+      );
+      allow list: if false;
+      allow create, update: if owns(uid) && validProfile(request.resource.data, uid);
+      allow delete: if false;
+    }
+
+    match /TEAMS/{teamId} {
+      function validTeam(data) {
+        return data.keys().hasAll(['title', 'description', 'mode', 'tier', 'damage', 'platform', 'isRanked', 'members', 'createdAt'])
+          && data.keys().hasOnly(['title', 'description', 'mode', 'tier', 'damage', 'platform', 'isRanked', 'members', 'createdAt'])
+          && data.title is string && data.title.size() <= 100 && data.title.matches('.*\\S.*')
+          && data.description is string && data.description.size() <= 1000
+          && data.mode in ['duo', 'squad'] && data.platform in ['steam', 'kakao']
+          && data.isRanked is bool
+          && (data.tier == null || data.tier in ['bronze', 'silver', 'gold', 'platinum', 'crystal', 'diamond', 'master', 'survivor'])
+          && (data.damage == null || (data.damage is number && data.damage >= 0 && data.damage <= 10000))
+          && data.createdAt == request.time
+          && data.members == [request.auth.uid];
+      }
+
+      function joinsSelf() {
+        let before = resource.data.members;
+        let after = request.resource.data.members;
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members'])
+          && !(request.auth.uid in before)
+          && after is list && after.size() == before.size() + 1
+          && after.size() <= capacity(resource.data)
+          && after.toSet() == before.toSet().union([request.auth.uid].toSet())
+          && after.size() == after.toSet().size()
+          && hasNickname(resource.data.platform);
+      }
+
+      function leavesSelf() {
+        let before = resource.data.members;
+        let after = request.resource.data.members;
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members'])
+          && request.auth.uid in before
+          && after is list && after.size() > 0 && after.size() == before.size() - 1
+          && after.toSet() == before.toSet().difference([request.auth.uid].toSet());
+      }
+
+      function closesOwnLastSeat() {
+        return resource.data.members == [request.auth.uid]
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'closedAt', 'closedBy'])
+          && request.resource.data.members == []
+          && request.resource.data.closedBy == request.auth.uid
+          && request.resource.data.closedAt == request.time;
+      }
+
+      // Team metadata is needed by the public recruitment listing.
+      allow read: if true;
+      allow create: if signedIn() && validTeam(request.resource.data) && hasNickname(request.resource.data.platform);
+      allow update: if signedIn() && active(resource.data)
+        && (joinsSelf() || leavesSelf() || closesOwnLastSeat());
+      allow delete: if signedIn() && !active(resource.data)
+        && resource.data.closedBy == request.auth.uid && resource.data.members == [];
+
+      match /CHAT_MESSAGES/{messageId} {
+        function team() {
+          return get(/databases/$(database)/documents/TEAMS/$(teamId)).data;
+        }
+
+        function member() {
+          return signedIn() && active(team()) && request.auth.uid in team().members;
+        }
+
+        function closingMember() {
+          return signedIn() && !active(team()) && team().closedBy == request.auth.uid;
+        }
+
+        function validMessage(data) {
+          let profile = get(/databases/$(database)/documents/PUBLIC_PROFILES/$(request.auth.uid)).data;
+          let nickname = team().platform == 'steam' ? profile.steamNickname : profile.kakaoNickname;
+          return data.keys().hasAll(['type', 'uid', 'sender', 'senderId', 'message', 'createdAt'])
+            && data.keys().hasOnly(['type', 'uid', 'sender', 'senderId', 'message', 'createdAt'])
+            && data.type == 'user' && data.uid == request.auth.uid && data.senderId == request.auth.uid
+            && data.sender == nickname && nickname.size() > 0
+            && data.message is string && data.message.size() <= 2000 && data.message.matches('.*\\S.*')
+            && data.createdAt == request.time;
+        }
+
+        allow read: if member() || closingMember();
+        allow create: if member() && validMessage(request.resource.data);
+        allow update: if false;
+        allow delete: if closingMember();
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
