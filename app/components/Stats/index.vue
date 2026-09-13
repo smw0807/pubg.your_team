@@ -36,7 +36,7 @@ const metrics = computed(() => [
   </div>
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div v-for="metric in metrics" :key="metric.label" class="bg-gray-800 border border-gray-700 p-3 rounded-lg text-center">
-      <div class="text-xl font-bold text-blue-400">{{ metric.value }}</div>
+      <div class="break-all text-lg sm:text-xl font-bold text-blue-400">{{ metric.value }}</div>
       <div class="text-xs text-gray-400 mt-1">{{ metric.label }}</div>
     </div>
   </div>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveModalUi } from '~/constants/modal';
 import UserStat from '~/components/Modal/UserStat.vue';
 
 const { profile, getProfile, setProfile } = useProfile();
@@ -33,11 +34,12 @@ watch(profile, () => {
 
 <template>
   <UModal
+    :ui="responsiveModalUi"
     title="게임 닉네임 관리"
     description="팀찾기 기능을 이용하려면 현재 사용중인 스팀, 카카오 닉네임을 입력해주세요."
     :dismissible="false"
   >
-    <UButton color="info" variant="ghost">
+    <UButton color="info" variant="ghost" aria-label="게임 닉네임 관리" class="min-h-11 min-w-11 justify-center">
       <UIcon name="i-heroicons-user-circle" class="w-6 h-6" />
     </UButton>
 
@@ -45,13 +47,13 @@ watch(profile, () => {
       <div class="flex flex-col gap-4">
         <UFormField label="스팀 닉네임">
           <div class="flex gap-2">
-            <UInput v-model="steamNickname" placeholder="스팀 닉네임을 입력해주세요." class="w-full" />
+            <UInput v-model="steamNickname" placeholder="스팀 닉네임을 입력해주세요." class="min-w-0 flex-1" />
             <UserStat platform="steam" :nickname="steamNickname" />
           </div>
         </UFormField>
         <UFormField label="카카오 닉네임">
           <div class="flex gap-2">
-            <UInput v-model="kakaoNickname" placeholder="카카오 닉네임을 입력해주세요." class="w-full" />
+            <UInput v-model="kakaoNickname" placeholder="카카오 닉네임을 입력해주세요." class="min-w-0 flex-1" />
             <UserStat platform="kakao" :nickname="kakaoNickname" />
           </div>
         </UFormField>
@@ -59,7 +61,7 @@ watch(profile, () => {
     </template>
 
     <template #footer>
-      <div class="flex justify-end">
+      <div class="flex w-full justify-end">
         <UButton label="저장" :loading="isSaving" :disabled="isSaving" color="info" variant="outline" @click="handleSave" />
       </div>
     </template>

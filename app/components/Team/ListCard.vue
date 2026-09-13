@@ -99,7 +99,7 @@ const handleClick = () => {
 
 <template>
   <UCard
-    class="hover:shadow-lg transition-shadow cursor-pointer"
+    class="min-w-0 hover:shadow-lg transition-shadow cursor-pointer focus-visible:outline-2 focus-visible:outline-blue-400"
     role="button"
     tabindex="0"
     :aria-label="`${team.title} 팀 입장`"
@@ -108,12 +108,12 @@ const handleClick = () => {
     @keydown.space.prevent="handleClick"
   >
     <template #header>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <UBadge v-if="team.isRanked" color="error" variant="outline">
           랭크
         </UBadge>
-        <h3 class="text-lg font-semibold">{{ team.title }}</h3>
-        <div class="flex items-center gap-2">
+        <h3 class="min-w-0 flex-1 [overflow-wrap:anywhere] text-lg font-semibold">{{ team.title }}</h3>
+        <div class="flex shrink-0 items-center gap-2">
           <span class="text-sm text-gray-300">
             [{{ team.members.length }}/ {{ team.mode === 'duo' ? '2' : '4' }}]
           </span>
@@ -123,7 +123,7 @@ const handleClick = () => {
     </template>
 
     <div class="py-2">
-      <p class="text-sm text-gray-400">{{ team.description }}</p>
+      <p class="[overflow-wrap:anywhere] text-sm text-gray-400">{{ team.description }}</p>
     </div>
 
     <template #footer>

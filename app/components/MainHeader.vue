@@ -6,6 +6,7 @@ const { signIn, user, signOut, isAuthReady } = useAuth();
 const { openConfirm } = useConfirm();
 const { openAlert } = useAlert();
 const isSigningIn = ref(false);
+const menuOpen = ref(false);
 
 const handleSignIn = async () => {
   if (isSigningIn.value) return;
@@ -24,24 +25,32 @@ const handleSignOut = async () => {
 </script>
 
 <template>
-  <UHeader title="PUBG Your Team">
+  <UHeader v-model:open="menuOpen" title="PUBG Your Team" :menu="{ title: '팀 찾기 메뉴', description: '플랫폼을 선택해 팀을 찾아보세요.' }" :ui="{ title: 'text-base sm:text-xl', container: 'gap-1 px-3 sm:px-6', right: 'gap-0.5 sm:gap-1.5' }">
+    <template #toggle="{ open, toggle }">
+      <UButton color="neutral" variant="ghost" class="min-h-11 min-w-11 justify-center lg:hidden" :aria-label="open ? '메뉴 닫기' : '메뉴 열기'" :aria-expanded="open" :icon="open ? 'i-heroicons-x-mark' : 'i-heroicons-bars-3'" @click="toggle" />
+    </template>
     <template #right>
       <template v-if="user">
         <UserProfile />
         <UUser
+          class="hidden xl:flex"
           :name="user.displayName as string"
           :description="user.email as string"
           :avatar="{ src: user.photoURL as string }"
         />
-        <UButton color="warning" variant="ghost" @click="handleSignOut">
+        <UButton color="warning" variant="ghost" aria-label="로그아웃" class="min-h-11 min-w-11 justify-center" @click="handleSignOut">
           <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-6 h-6" />
         </UButton>
       </template>
       <template v-else>
-        <UButton color="info" :loading="!isAuthReady || isSigningIn" :disabled="!isAuthReady || isSigningIn" @click="handleSignIn">Login</UButton>
+        <UButton color="info" class="min-h-11" :loading="!isAuthReady || isSigningIn" :disabled="!isAuthReady || isSigningIn" @click="handleSignIn">로그인</UButton>
       </template>
     </template>
 
     <NavigationMenu />
+    <template #body>
+      <NavigationMenu orientation="vertical" @select="menuOpen = false" />
+      <p v-if="user" class="mt-6 text-sm text-muted break-all">{{ user.displayName }}</p>
+    </template>
   </UHeader>
 </template>

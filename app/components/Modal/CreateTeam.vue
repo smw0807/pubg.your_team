@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveModalUi } from '~/constants/modal';
 import useTeam from '~/composables/useTeam';
 import {
   createGameTypeOptions,
@@ -63,6 +64,7 @@ const handleOpen = (value: boolean) => {
 
 <template>
   <UModal
+    :ui="responsiveModalUi"
     title="팀 생성"
     description="새로운 팀을 만들어보세요"
     :dismissible="false"
@@ -74,11 +76,13 @@ const handleOpen = (value: boolean) => {
     <UButton color="primary" size="lg">팀 만들기</UButton>
     <template #body>
       <div class="space-y-4">
-        <div class="grid grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label class="block text-sm font-medium mb-1.5">플랫폼 *</label>
             <USelect
               v-model="formData.platform"
+              aria-label="플랫폼"
+              class="w-full"
               :items="platformOptions"
               option-attribute="label"
               value-attribute="value"
@@ -90,6 +94,8 @@ const handleOpen = (value: boolean) => {
             <label class="block text-sm font-medium mb-1.5">게임 타입 *</label>
             <USelect
               v-model="selectedGameType"
+              aria-label="게임 타입"
+              class="w-full"
               :items="createGameTypeOptions"
               option-attribute="label"
               value-attribute="value"
@@ -101,6 +107,8 @@ const handleOpen = (value: boolean) => {
             <label class="block text-sm font-medium mb-1.5">게임 모드 *</label>
             <USelect
               v-model="formData.mode"
+              aria-label="게임 모드"
+              class="w-full"
               :items="createGameModeOptions"
               option-attribute="label"
               value-attribute="value"
@@ -111,13 +119,13 @@ const handleOpen = (value: boolean) => {
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1.5">팀 제목 *</label>
-          <UInput v-model="formData.title" placeholder="팀 제목을 입력하세요" size="md" class="w-full" />
+          <label for="team-title" class="block text-sm font-medium mb-1.5">팀 제목 *</label>
+          <UInput id="team-title" v-model="formData.title" placeholder="팀 제목을 입력하세요" size="md" class="w-full" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1.5">팀 설명</label>
-          <UTextarea v-model="formData.description" placeholder="팀에 대한 설명을 입력하세요" :rows="2" size="xl" class="w-full" />
+          <label for="team-description" class="block text-sm font-medium mb-1.5">팀 설명</label>
+          <UTextarea id="team-description" v-model="formData.description" placeholder="팀에 대한 설명을 입력하세요" :rows="2" size="xl" class="w-full" />
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -125,6 +133,7 @@ const handleOpen = (value: boolean) => {
             <label class="block text-sm font-medium mb-1.5">원하는 티어</label>
             <USelect
               v-model="formData.tier"
+              aria-label="원하는 티어"
               :items="createTierOptions"
               option-attribute="label"
               value-attribute="value"
@@ -134,19 +143,19 @@ const handleOpen = (value: boolean) => {
             />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1.5">최소 데미지</label>
-            <UInput v-model.number="formData.damage" type="number" placeholder="0" min="0" size="md" class="w-full" />
+            <label for="team-damage" class="block text-sm font-medium mb-1.5">최소 데미지</label>
+            <UInput id="team-damage" v-model.number="formData.damage" type="number" inputmode="numeric" placeholder="0" min="0" size="md" class="w-full" />
           </div>
         </div>
       </div>
     </template>
 
     <template #footer>
-      <div class="flex justify-end gap-3">
+      <div class="flex w-full justify-end gap-3">
         <UButton :loading="isSubmitting" :disabled="isSubmitting || !formData.title.trim() || !formData.platform" color="primary" size="sm" @click="handleSubmit">
           팀 생성
         </UButton>
-        <UButton color="neutral" variant="ghost" size="sm" @click="open = false">
+        <UButton color="neutral" variant="ghost" size="sm" :disabled="isSubmitting" @click="open = false">
           취소
         </UButton>
       </div>

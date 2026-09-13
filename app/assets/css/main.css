@@ -1,6 +1,19 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+@media (max-width: 639px) {
+  .mobile-dialog input,
+  .mobile-dialog textarea,
+  .mobile-dialog [role='combobox'] {
+    font-size: 1rem;
+    min-height: 2.75rem;
+  }
+
+  .mobile-dialog button {
+    min-height: 2.75rem;
+  }
+}
+
 /* 푸터 스타일링 */
 footer {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);

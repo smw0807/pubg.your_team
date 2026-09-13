@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveModalUi } from '~/constants/modal';
 import useAlert from '~/composables/useAlert';
 
 const { alertOpen, alertTitle, alertDescription, closeAlert } = useAlert();
@@ -9,6 +10,7 @@ const handleUpdateOpen = (open: boolean) => {
 </script>
 <template>
   <UModal
+    :ui="responsiveModalUi"
     :open="alertOpen"
     :title="alertTitle"
     :description="alertDescription"
