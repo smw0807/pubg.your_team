@@ -1,153 +1,59 @@
 <script setup lang="ts">
 import type { Stat } from '~/models/profile';
+import { recentMatchUrl } from '~/utils/statsFormat';
 
-const { platform, nickname } = defineProps<{
-  platform: string;
-  nickname: string;
-}>();
+const { platform, nickname } = defineProps<{ platform: string; nickname: string }>();
+const isOpen = ref(false);
+const target = computed(() => ({ platform, nickname }));
+const { stats, isLoading, errorMessage, hasLoaded, load, reset } = usePlayerStats(target, (value, signal) =>
+  $fetch<Stat>('/api/stats/rank', { query: { platform: value.platform, playerName: value.nickname }, signal, timeout: 20_000, retry: 0 }),
+);
+watch(isOpen, (open) => { if (open) void load(); else reset(); });
+watch(target, () => { if (isOpen.value) void load(); });
 
-const stats = ref<Stat | null>(null);
-const isLoading = ref(false);
-
-const handleCheckStat = async () => {
-  isLoading.value = true;
-  try {
-    const response = await pubgApi(
-      `/stats/rank?platform=${platform}&playerName=${nickname}`
-    );
-    stats.value = response as Stat;
-  } catch (error) {
-    console.error('스탯 조회 실패:', error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const handleCheckRecentMatch = async () => {
-  const config = useRuntimeConfig();
-  const matchUrl = config.public.matchUrl as string;
-  window.open(`${matchUrl}/player/${platform}/${nickname}`, '_blank');
-};
-
-const banTypeTransform = (banType: string) => {
-  switch (banType) {
-    case 'Innocent':
-      return '정상';
-    case 'TemporaryBan':
-      return '임시정지';
-    case 'PermanentBan':
-      return '영구정지';
-    default:
-      return '정상';
-  }
-};
-
-const getBanTypeColor = (banType: string) => {
-  switch (banType) {
-    case 'Innocent':
-      return {
-        icon: 'text-green-500',
-        text: 'text-green-600',
-      };
-    case 'TemporaryBan':
-      return {
-        icon: 'text-orange-500',
-        text: 'text-orange-600',
-      };
-    case 'PermanentBan':
-      return {
-        icon: 'text-red-500',
-        text: 'text-red-600',
-      };
-    default:
-      return {
-        icon: 'text-green-500',
-        text: 'text-green-600',
-      };
-  }
-};
+const config = useRuntimeConfig();
+const matchUrl = computed(() => recentMatchUrl(String(config.public.matchUrl ?? ''), platform, nickname));
+const modes = computed(() => [
+  { key: 'squad', mode: 'squad' as const, perspective: 'TPP' as const, stat: stats.value?.squad },
+  { key: 'squadFpp', mode: 'squad' as const, perspective: 'FPP' as const, stat: stats.value?.squadFpp },
+  { key: 'duo', mode: 'duo' as const, perspective: 'TPP' as const, stat: stats.value?.duo },
+  { key: 'duoFpp', mode: 'duo' as const, perspective: 'FPP' as const, stat: stats.value?.duoFpp },
+].filter((entry) => entry.stat));
+const fetchedAt = computed(() => stats.value?.fetchedAt ? new Date(stats.value.fetchedAt).toLocaleString('ko-KR') : '');
+const banLabel = computed(() => ({ Innocent: '정상', TemporaryBan: '임시정지', PermanentBan: '영구정지' })[stats.value?.banType ?? ''] ?? '확인 불가');
 </script>
 
 <template>
-  <UModal title="스탯 확인" description="현재 스탯을 확인할 수 있습니다.">
-    <UTooltip text="스탯 확인">
-      <UButton
-        color="info"
-        variant="ghost"
-        :loading="isLoading"
-        :disabled="isLoading"
-        @click="handleCheckStat"
-      >
-        <UIcon name="i-heroicons-magnifying-glass" class="w-6 h-6" />
-      </UButton>
+  <UModal v-model:open="isOpen" title="경쟁전 전적 확인" description="현재 시즌의 듀오·스쿼드 경쟁전 기록을 표시합니다.">
+    <UTooltip text="전적 확인">
+      <UButton color="info" variant="ghost" :aria-label="`${nickname} 전적 확인`" icon="i-heroicons-magnifying-glass" />
     </UTooltip>
-
     <template #body>
       <div class="flex flex-col gap-6">
-        <!-- 플레이어 정보 -->
-        <div class="flex flex-col gap-2">
-          <span class="text-sm text-gray-500">
-            {{ platformTextTransform(platform) }} 닉네임
-          </span>
-          <div class="flex items-center gap-3">
+        <div class="space-y-2">
+          <p class="text-sm text-gray-400">{{ platformTextTransform(platform) }} 닉네임</p>
+          <div class="flex flex-wrap items-center gap-3">
             <span class="text-lg font-bold">{{ nickname }}</span>
-            <!-- 밴 상태 -->
-            <div v-if="stats?.banType" class="flex items-center gap-1">
-              <UIcon
-                :name="
-                  stats.banType === 'Innocent'
-                    ? 'i-heroicons-shield-check'
-                    : 'i-heroicons-exclamation-triangle'
-                "
-                :class="getBanTypeColor(stats.banType).icon"
-                class="w-4 h-4"
-              />
-              <span
-                class="text-sm font-medium"
-                :class="getBanTypeColor(stats.banType).text"
-              >
-                {{ banTypeTransform(stats.banType) }}
-              </span>
+            <span v-if="stats" class="text-sm">계정 상태: {{ banLabel }}</span>
+            <UButton v-if="matchUrl" :to="matchUrl" target="_blank" rel="noopener noreferrer" variant="outline">최근 매치 보기</UButton>
+            <span v-else class="text-sm text-gray-400">최근 매치 링크 미설정</span>
+          </div>
+        </div>
+        <p v-if="isLoading" role="status" class="py-8 text-center">전적을 불러오는 중입니다...</p>
+        <div v-else-if="errorMessage" role="alert" class="rounded-lg border border-red-400 p-4 space-y-3">
+          <p>{{ errorMessage }}</p>
+          <UButton variant="outline" @click="load">다시 시도</UButton>
+        </div>
+        <template v-else-if="hasLoaded">
+          <p class="text-sm text-gray-400">조회 시각: {{ fetchedAt }} · 최대 5분간 캐시됩니다.</p>
+          <p v-if="!modes.length" role="status" class="py-8 text-center text-gray-400">현재 시즌 듀오·스쿼드 경쟁전 기록이 없습니다. 일반전 기록은 포함하지 않습니다.</p>
+          <template v-else>
+            <p class="text-sm text-gray-400">TPP/FPP 기록은 별도로 표시합니다. — 표시는 API에서 제공되지 않은 값입니다.</p>
+            <div v-for="entry in modes" :key="entry.key" class="space-y-4">
+              <Stats v-if="entry.stat" :stat="entry.stat" :mode="entry.mode" :perspective="entry.perspective" />
             </div>
-            <UButton
-              color="info"
-              variant="outline"
-              @click="handleCheckRecentMatch"
-              >최근매치보기</UButton
-            >
-          </div>
-        </div>
-
-        <!-- 스탯 데이터가 있을 때만 표시 -->
-        <div v-if="stats" class="space-y-6">
-          <!-- 스쿼드 스탯 -->
-          <div v-if="stats.squad" class="space-y-4">
-            <Stats :stat="stats.squad" mode="squad" />
-          </div>
-
-          <!-- 듀오 스탯 (있는 경우) -->
-          <div v-if="stats.duo" class="space-y-4">
-            <Stats :stat="stats.duo" mode="duo" />
-          </div>
-        </div>
-
-        <!-- 로딩 상태 -->
-        <div v-if="isLoading" class="flex justify-center items-center py-8">
-          <UIcon
-            name="i-heroicons-arrow-path"
-            class="w-6 h-6 animate-spin text-blue-500"
-          />
-          <span class="ml-2 text-gray-600">스탯을 불러오는 중...</span>
-        </div>
-
-        <!-- 스탯이 없을 때 -->
-        <div v-if="!stats && !isLoading" class="text-center py-8 text-gray-500">
-          <UIcon
-            name="i-heroicons-chart-bar"
-            class="w-12 h-12 mx-auto mb-2 opacity-50"
-          />
-          <p>현재 시즌 스탯이 없습니다.</p>
-        </div>
+          </template>
+        </template>
       </div>
     </template>
   </UModal>
