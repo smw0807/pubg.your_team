@@ -57,7 +57,7 @@ const selectedGameMode = ref<GameMode>('all');
 const selectedTier = ref<Tier>('all');
 
 const filters = computed(() => ({ platform, gameType: selectedGameType.value, mode: selectedGameMode.value, tier: selectedTier.value }));
-const { teams: teamList, isLoading, hasLoaded, fromCache, isOffline, errorMessage, start, refresh } = useTeamList(filters, subscribeTeams(getFirestore(useFirebase().app)));
+const { teams: teamList, isLoading, hasLoaded, fromCache, isOffline, errorMessage, start, refresh, pageNumber, hasNext, hasPrevious, firstPage, nextPage, previousPage } = useTeamList(filters, subscribeTeams(getFirestore(useFirebase().app)));
 const hasFilters = computed(() => selectedGameType.value !== 'all' || selectedGameMode.value !== 'all' || selectedTier.value !== 'all');
 const resetFilters = () => {
   selectedGameType.value = 'all';
@@ -123,10 +123,10 @@ onMounted(start);
     </div>
     <p v-if="isLoading && !isOffline" role="status" class="py-6 text-center">팀 목록을 불러오는 중입니다...</p>
     <div v-else-if="hasLoaded && !teamList.length && !errorMessage && !fromCache && !isOffline" role="status" class="rounded-xl border border-gray-700 p-8 text-center space-y-3">
-      <p>{{ hasFilters ? '선택한 조건에 맞는 팀이 없습니다.' : '아직 모집 중인 팀이 없습니다. 첫 팀을 만들어보세요.' }}</p>
+      <p>{{ hasNext || hasPrevious ? '이 페이지에는 모집 중인 팀이 없습니다. 다른 페이지를 확인해주세요.' : hasFilters ? '선택한 조건에 맞는 팀이 없습니다.' : '아직 모집 중인 팀이 없습니다. 첫 팀을 만들어보세요.' }}</p>
       <UButton v-if="hasFilters" variant="outline" @click="resetFilters">필터 초기화</UButton>
     </div>
-    <p v-if="hasLoaded && teamList.length" role="status" class="mb-3 text-sm text-gray-400">{{ teamList.length }}개 팀 · {{ errorMessage || fromCache || isOffline ? '마지막 확인 목록' : '실시간 갱신' }}</p>
+    <p v-if="hasLoaded && teamList.length" role="status" class="mb-3 text-sm text-gray-400">현재 페이지 {{ teamList.length }}개 팀 · {{ errorMessage || fromCache || isOffline ? '마지막 확인 목록' : '실시간 갱신' }}</p>
     <div :aria-busy="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <TeamListCard
         v-for="team in teamList"
@@ -135,5 +135,11 @@ onMounted(start);
         @click="handleClick"
       />
     </div>
+    <nav v-if="hasLoaded || hasPrevious" aria-label="팀 목록 페이지" class="mt-6 flex flex-wrap items-center justify-center gap-3">
+      <UButton class="min-h-11" variant="outline" :disabled="isLoading || isOffline || !hasPrevious" @click="previousPage">이전 페이지</UButton>
+      <span role="status" aria-live="polite">{{ pageNumber }}페이지</span>
+      <UButton class="min-h-11" variant="outline" :disabled="isLoading || isOffline || fromCache || !!errorMessage || !hasNext" @click="nextPage">다음 페이지</UButton>
+      <UButton v-if="hasPrevious" class="min-h-11" variant="ghost" :disabled="isLoading || isOffline" @click="firstPage">최신 팀으로</UButton>
+    </nav>
   </div>
 </template>

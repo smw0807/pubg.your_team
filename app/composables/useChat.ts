@@ -1,9 +1,9 @@
-import { addDoc, collection, doc, getFirestore, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, getFirestore, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { createChatHistorySource } from '~/services/chatHistory';
 import useFirebase from '~/utils/firebase';
-import { fetchRoom, joinRoom, leaveRoom, readTeam, RoomError, roomErrorMessage, touchRoomPresence } from '~/services/room';
+import { fetchRoom, joinRoom, leaveRoom, readTeam, RoomError, roomErrorMessage, roomSnapshotState, touchRoomPresence } from '~/services/room';
 import type { Team } from '~/models/team';
 import type { Profile } from '~/models/profile';
-import type { ChatMessage } from '~/models/chat';
 
 export default function useChat() {
   const db = getFirestore(useFirebase().app);
@@ -11,11 +11,12 @@ export default function useChat() {
   const { getProfile, searchProfile } = useProfile();
   const team = ref<Team | null>(null);
   const teamMembers = ref<Profile[]>([]);
-  const chatMessages = ref<ChatMessage[]>([]);
+  const history = useChatHistory(createChatHistorySource(db));
+  const { messages: chatMessages, hasOlder: hasOlderMessages, isLoadingOlder, historyError, notice: historyNotice, fromCache: chatFromCache } = history;
   const phase = ref<'idle' | 'joining' | 'joined' | 'leaving' | 'leave-error' | 'error' | 'ended'>('idle');
   const errorMessage = ref('');
-  const connectionErrors = reactive({ team: '', chat: '', profiles: '', presence: '' });
-  const connectionError = computed(() => Object.values(connectionErrors).find(Boolean) ?? '');
+  const connectionErrors = reactive({ team: '', profiles: '', presence: '' });
+  const connectionError = computed(() => Object.values(connectionErrors).find(Boolean) ?? history.error.value);
   const isOffline = ref(false);
   let participantUid: string | null = null;
   let roomId: string | null = null;
@@ -37,6 +38,7 @@ export default function useChat() {
     stops = [];
     clearInterval(heartbeat);
     heartbeat = undefined;
+    history.pause();
   };
   const endSession = (message: string) => {
     cleanupWatchers();
@@ -44,7 +46,7 @@ export default function useChat() {
     phase.value = 'ended';
     errorMessage.value = message;
     teamMembers.value = [];
-    chatMessages.value = [];
+    history.clear();
   };
   const pulse = async () => {
     if (!joined || !roomId || !participantUid || heartbeatPending || isOffline.value || disposed) return;
@@ -64,14 +66,16 @@ export default function useChat() {
     const current = () => version === generation && !disposed;
     const ref = doc(db, 'TEAMS', roomId);
     lastMembers = '';
-    stops.push(onSnapshot(ref, (snapshot) => {
+    stops.push(onSnapshot(ref, { includeMetadataChanges: true }, (snapshot) => {
       if (!current()) return;
-      if (!snapshot.exists() || snapshot.data().closedAt || !snapshot.data().members?.includes(participantUid)) {
+      const status = roomSnapshotState(snapshot.data(), participantUid!, snapshot.metadata);
+      if (status === 'unconfirmed') return;
+      if (status === 'ended') {
         endSession('팀이 종료되었거나 참여가 해제되었습니다. 팀 목록에서 다시 입장해주세요.');
         return;
       }
       try {
-        team.value = readTeam(snapshot.id, snapshot.data());
+        team.value = readTeam(snapshot.id, snapshot.data()!);
         connectionErrors.team = '';
       } catch (error) { connectionErrors.team = roomErrorMessage(error); return; }
       const members = team.value.members;
@@ -89,14 +93,7 @@ export default function useChat() {
         connectionErrors.profiles = roomErrorMessage(error);
       });
     }, (error) => { if (current()) connectionErrors.team = roomErrorMessage(error); }));
-    stops.push(onSnapshot(query(collection(ref, 'CHAT_MESSAGES'), orderBy('createdAt', 'asc')), (snapshot) => {
-      if (!current()) return;
-      chatMessages.value = snapshot.docs.map((message) => {
-        const data = message.data({ serverTimestamps: 'estimate' });
-        return { ...data, id: message.id, createdAt: data.createdAt?.toDate() ?? new Date() } as ChatMessage;
-      });
-      connectionErrors.chat = '';
-    }, (error) => { if (current()) connectionErrors.chat = roomErrorMessage(error); }));
+    history.start(roomId);
     heartbeat = setInterval(() => void pulse(), 60_000);
   };
   const joinTeam = (id: string): Promise<boolean> => {
@@ -147,6 +144,7 @@ export default function useChat() {
         await leaveRoom(db, roomId, participantUid);
         joined = false;
         team.value = null;
+        history.clear();
         phase.value = 'idle';
       } catch (error) {
         phase.value = 'leave-error';
@@ -203,5 +201,9 @@ export default function useChat() {
     window.removeEventListener('offline', updateOnline);
     document.removeEventListener('visibilitychange', resume);
   });
-  return { team, teamMembers, chatMessages, phase, errorMessage, connectionError, isOffline, joinTeam, leaveTeam, retryConnection, sendChatMessage };
+  const loadOlderMessages = async () => {
+    if (isOffline.value || phase.value !== 'joined') return;
+    await history.loadOlder();
+  };
+  return { team, teamMembers, chatMessages, hasOlderMessages, isLoadingOlder, historyError, historyNotice, chatFromCache, loadOlderMessages, phase, errorMessage, connectionError, isOffline, joinTeam, leaveTeam, retryConnection, sendChatMessage };
 }
