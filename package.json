@@ -17,6 +17,8 @@
     "test:migration": "firebase emulators:exec --only firestore --project demo-pubg-team 'node --test tests/profile-migration.test.mjs'",
     "test": "firebase emulators:exec --only firestore --project demo-pubg-team 'node --test tests/*.test.mjs'",
     "test:smoke": "node scripts/smoke-test.mjs",
+    "test:production": "node scripts/production-smoke.mjs",
+    "check:bundle": "node scripts/check-bundle.mjs",
     "migrate:profiles": "node scripts/migrate-public-profiles.mjs"
   },
   "dependencies": {

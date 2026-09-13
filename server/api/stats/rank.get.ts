@@ -1,10 +1,13 @@
 import { parseStatsQuery, statsError, StatsError } from '../../utils/pubgStats';
 import { createPubgService } from '../../utils/pubgService';
+import { createStatsErrorReporter } from '../../utils/operationalLog';
 
 let service: ReturnType<typeof createPubgService> | undefined;
 let configuredKey: string | undefined;
+const reportFailure = createStatsErrorReporter();
 
 export default defineEventHandler(async (event) => {
+  const startedAt = Date.now();
   setHeader(event, 'Cache-Control', 'no-store');
   try {
     const { platform, playerName } = parseStatsQuery(getQuery(event));
@@ -17,6 +20,7 @@ export default defineEventHandler(async (event) => {
     return await service(platform, playerName);
   } catch (cause) {
     const error = statsError(cause);
+    reportFailure(error.statusCode, Date.now() - startedAt);
     if (error.retryAfter) setHeader(event, 'Retry-After', error.retryAfter);
     // SDK errors can contain Authorization headers. Return only sanitized fields.
     throw createError({ statusCode: error.statusCode, message: error.message });
