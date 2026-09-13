@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveModalUi } from '~/constants/modal';
 import type { Stat } from '~/models/profile';
 import { recentMatchUrl } from '~/utils/statsFormat';
 
@@ -24,16 +25,16 @@ const banLabel = computed(() => ({ Innocent: '정상', TemporaryBan: '임시정�
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" title="경쟁전 전적 확인" description="현재 시즌의 듀오·스쿼드 경쟁전 기록을 표시합니다.">
+  <UModal v-model:open="isOpen" :ui="{ ...responsiveModalUi, content: 'mobile-dialog sm:max-w-3xl' }" title="경쟁전 전적 확인" description="현재 시즌의 듀오·스쿼드 경쟁전 기록을 표시합니다.">
     <UTooltip text="전적 확인">
-      <UButton color="info" variant="ghost" :aria-label="`${nickname} 전적 확인`" icon="i-heroicons-magnifying-glass" />
+      <UButton color="info" variant="ghost" class="min-h-11 min-w-11 shrink-0 justify-center" :aria-label="`${nickname} 전적 확인`" icon="i-heroicons-magnifying-glass" />
     </UTooltip>
     <template #body>
       <div class="flex flex-col gap-6">
         <div class="space-y-2">
           <p class="text-sm text-gray-400">{{ platformTextTransform(platform) }} 닉네임</p>
           <div class="flex flex-wrap items-center gap-3">
-            <span class="text-lg font-bold">{{ nickname }}</span>
+            <span class="min-w-0 break-all text-lg font-bold">{{ nickname }}</span>
             <span v-if="stats" class="text-sm">계정 상태: {{ banLabel }}</span>
             <UButton v-if="matchUrl" :to="matchUrl" target="_blank" rel="noopener noreferrer" variant="outline">최근 매치 보기</UButton>
             <span v-else class="text-sm text-gray-400">최근 매치 링크 미설정</span>

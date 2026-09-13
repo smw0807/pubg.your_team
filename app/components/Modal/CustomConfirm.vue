@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveModalUi } from '~/constants/modal';
 import useConfirm from '~/composables/useConfirm';
 
 const {
@@ -17,6 +18,7 @@ const handleUpdateOpen = (open: boolean) => {
 </script>
 <template>
   <UModal
+    :ui="responsiveModalUi"
     :open="confirmOpen"
     :title="confirmTitle"
     :description="confirmDescription"

@@ -73,7 +73,7 @@ onMounted(start);
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container mx-auto py-4 sm:px-4 sm:py-8">
     <div class="flex items-center justify-between mb-4">
       <h1 class="text-2xl font-bold">{{ platformTextTransform(platform) }} 팀 찾기</h1>
     </div>

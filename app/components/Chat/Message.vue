@@ -32,7 +32,7 @@ const formatMessageWithLinks = (text: string) => {
 
 <template>
   <div
-    class="max-w-xs lg:max-w-md relative group"
+    class="min-w-0 max-w-[90%] lg:max-w-md relative group"
     :class="
       message.uid === user?.uid
         ? 'flex flex-col items-end'
@@ -41,7 +41,7 @@ const formatMessageWithLinks = (text: string) => {
   >
     <!-- 메시지 박스 -->
     <div
-      class="relative px-4 py-3 rounded-2xl shadow-lg transition-all duration-200 hover:shadow-xl"
+      class="min-w-0 max-w-full relative px-3 py-2 sm:px-4 sm:py-3 rounded-2xl shadow-lg transition-all duration-200 hover:shadow-xl"
       :class="
         message.uid === user?.uid
           ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-md'
@@ -49,7 +49,7 @@ const formatMessageWithLinks = (text: string) => {
       "
     >
       <!-- 메시지 내용 -->
-      <div class="text-sm font-medium leading-relaxed">
+      <div class="text-sm font-medium leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]">
         <template
           v-for="(part, index) in formatMessageWithLinks(message.message)"
           :key="index"
@@ -88,7 +88,7 @@ const formatMessageWithLinks = (text: string) => {
 
     <!-- 발신자 이름 -->
     <div
-      class="text-xs text-gray-400 mt-1 px-2"
+      class="max-w-full break-all text-xs text-gray-400 mt-1 px-2"
       :class="message.uid === user?.uid ? 'text-right' : 'text-left'"
     >
       {{ message.uid === user?.uid ? '나' : message.sender }}
