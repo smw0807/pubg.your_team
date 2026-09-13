@@ -31,6 +31,7 @@ try {
   assert.ok(ready, 'Production server did not start');
   for (const [path, expected] of [
     ['/', 200], ['/teams/steam', 200], ['/teams/kakao', 200], ['/teams/invalid', 404], ['/test', 404],
+    ['/_stats-check', 404],
     ['/api/internal/rooms/cleanup', 503],
     ['/api/stats/rank', 400],
     ['/api/stats/rank?platform=invalid&playerName=Player', 400],
@@ -41,6 +42,7 @@ try {
   ]) {
     const response = await fetch(`${base}${path}`, { signal: AbortSignal.timeout(10000) });
     assert.equal(response.status, expected, path);
+    if (path.startsWith('/api/stats/rank')) assert.equal(response.headers.get('cache-control'), 'no-store');
     console.log(`${expected} ${path}`);
   }
 } finally {
